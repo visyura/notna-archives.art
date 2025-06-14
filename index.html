@@ -2,13 +2,13 @@
 <html
   lang="en"
   data-ws-project="6b4711af-f6dc-4e85-82e4-082ea06367f1"
-  data-ws-last-published="2025-06-14T17:28:01.139Z"
+  data-ws-last-published="2025-06-14T19:13:36.057Z"
 >
   <head>
     <link
       rel="stylesheet"
       type="text/css"
-      href="/assets/static/app_generated_index-6937cd5a.C-0vmdIs.css"
+      href="/assets/static/app_generated_index-6937cd5a.BHNzmBiF.css"
     />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -262,7 +262,7 @@
           categories
         </h1>
         <div
-          class="w-box copqmak cqlaijg c1w3ahi2 c3zdkj3 c1n1g07y ck3af4j c1aso1h7 c1l0vha7 csyy8v5 c1bc2i7x c17r8x7j c18nyior c1lcvbhc"
+          class="w-box copqmak cqlaijg c1w3ahi2 c3zdkj3 c14zrzu7 ck3af4j c1aso1h7 c1l0vha7 csyy8v5 c1bc2i7x c17r8x7j c18nyior c1lcvbhc"
         >
           <div class="w-element c1al47jb c1jzfanm c92zd0h cwc6hbl c11r52nx">
             <a
@@ -424,6 +424,170 @@
           >
         </div>
       </nav>
+      <div
+        class="w-element c1357293 c9jnjeu c5tmc3l c1ldum37 czr2pxy c1wvutgf cry9bxc c1lfjoq7 ca4qjwu c1cdc69r cuccfz7"
+      >
+        <div class="w-element cgbdsuw cry9bxc c1mcmnmm chwq2gc">
+          <h1
+            class="w-heading c69v465 cy1haag cuccfz7 c1nqfyxm c1e9wxra cvlrcht c1hskipr c18nx7en c13zjl4p c6k8nt0 c13qqaub c17y1xey chtkp6l cn75l47 cxu94u9 c1k74s0j"
+          >
+            comment
+          </h1>
+          <h1
+            class="w-heading c69v465 cy1haag cuccfz7 c1nqfyxm c1e9wxra cvlrcht c1hskipr c18nx7en c13zjl4p c6k8nt0 c13qqaub c17y1xey chtkp6l cn75l47 cxu94u9 c1k74s0j"
+          >
+            section
+          </h1>
+        </div>
+      </div>
+      <div
+        class="w-html-embed c9jnjeu c1357293 cauqto8 c16xs6ny c1wt8a7g cl8xzcs cq6fxwd c121bfsy c3qzgd0"
+      >
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Comments</title>
+        <style>
+          body {
+            background: #121212;
+            color: white;
+            font-family: monospace;
+          }
+          #formRow {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+          }
+          input,
+          button {
+            height: 40px;
+            font-size: 22px;
+            font-family: monospace;
+            padding: 0 12px;
+            border: 1px solid #555;
+            border-radius: 4px;
+            background: transparent;
+            color: #ccc;
+            outline: none;
+          }
+          input::placeholder {
+            color: #777;
+          }
+          input:focus {
+            color: white;
+            border-color: #aaa;
+          }
+          button {
+            cursor: pointer;
+            color: white;
+            border-color: #777;
+            background: transparent;
+            transition: border-color 0.2s ease;
+          }
+          button:hover {
+            border-color: white;
+          }
+          #comments-section p {
+            margin: 6px 0;
+          }
+          #comments-section {
+            min-height: 60px;
+          }
+        </style>
+
+        <div id="formRow">
+          <input id="username" placeholder="name" />
+          <input
+            id="commentInput"
+            placeholder="write a comment"
+            style="flex-grow: 1"
+          />
+          <button id="postBtn">post</button>
+        </div>
+
+        <div id="comments-section"></div>
+
+        <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+        <script>
+          const firebaseConfig = {
+            apiKey: "AIzaSyD6uTtf1oZgqEKYzAZPgdoCSDiDKgcr7a4",
+            authDomain: "notna-7ba0d.firebaseapp.com",
+            projectId: "notna-7ba0d",
+            storageBucket: "notna-7ba0d.appspot.com",
+            messagingSenderId: "1028946019645",
+            appId: "1:1028946019645:web:5d39a0db08054782337154",
+          };
+
+          firebase.initializeApp(firebaseConfig);
+          const db = firebase.firestore();
+
+          function escapeHtml(text) {
+            return text.replace(
+              /[&<>"']/g,
+              (m) =>
+                ({
+                  "&": "&amp;",
+                  "<": "&lt;",
+                  ">": "&gt;",
+                  '"': "&quot;",
+                  "'": "&#39;",
+                })[m],
+            );
+          }
+
+          document.getElementById("postBtn").onclick = () => {
+            const name = document.getElementById("username").value.trim();
+            const message = document
+              .getElementById("commentInput")
+              .value.trim();
+            if (!name || !message) {
+              alert("Please enter both name and comment.");
+              return;
+            }
+            db.collection("comments")
+              .add({
+                name,
+                message,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+              })
+              .then(() => {
+                document.getElementById("username").value = "";
+                document.getElementById("commentInput").value = "";
+              })
+              .catch((e) => {
+                alert("Error posting comment: " + e.message);
+                console.error(e);
+              });
+          };
+
+          db.collection("comments")
+            .orderBy("timestamp", "desc")
+            .onSnapshot(
+              (snapshot) => {
+                const section = document.getElementById("comments-section");
+                section.innerHTML = "";
+                if (snapshot.empty) {
+                  section.innerHTML =
+                    '<p style="color:#888;">No comments yet.</p>';
+                  return;
+                }
+                snapshot.forEach((doc) => {
+                  const d = doc.data();
+                  section.innerHTML += `<p><strong>${escapeHtml(d.name)}:</strong> ${escapeHtml(d.message)}</p>`;
+                });
+              },
+              (error) => {
+                console.error("Firestore error: ", error);
+                document.getElementById("comments-section").innerHTML =
+                  '<p style="color:#f88;">Failed to load comments.</p>';
+              },
+            );
+        </script>
+      </div>
+      <div
+        class="w-box c1357293 c9jnjeu c5tmc3l c1ldum37 czr2pxy c1mcmnmm cry9bxc c1lfjoq7 c11ykhog c1kt5iwx cuccfz7 c121bfsy cqqb1p2"
+      ></div>
     </div>
     <script id="vike_pageContext" type="application/json">
       {
@@ -452,18 +616,18 @@
       {}
     </script>
     <script
-      src="/assets/entries/entry-server-routing.C802-JZQ.js"
+      src="/assets/entries/entry-server-routing.LNnNoYFW.js"
       type="module"
       async
     ></script>
     <link
       rel="modulepreload"
-      href="/assets/entries/pages_index.CNzwwU1d.js"
+      href="/assets/entries/pages_index.BdfE3n_i.js"
       as="script"
       type="text/javascript"
     /><link
       rel="modulepreload"
-      href="/assets/chunks/chunk-BbCeKKwG.js"
+      href="/assets/chunks/chunk-DLwtQJkf.js"
       as="script"
       type="text/javascript"
     />

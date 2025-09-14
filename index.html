@@ -1,26 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>index</title>
-<style>
-body { margin:0; font-family:Arial, sans-serif; }
-.container { display:flex; max-width:60%; margin:10% auto 0 auto; }
-.menu-col { width:30%; padding:0 10px; box-sizing:border-box; }
-.content-col { width:70%; padding:0 10px; box-sizing:border-box; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>notna</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <style>
+    body { margin:0; font-family:Arial, sans-serif; }
+    .container { display:flex; max-width:60%; margin:5% auto 0 auto; } /* top margin 5% */
+    .menu-col { width:30%; padding:0 10px; box-sizing:border-box; }
+    .content-col { width:70%; padding:0 10px; box-sizing:border-box; }
 
-.menu-item, .submenu a { font-size:18px; margin:5px 0; color:#000; text-decoration:none; display:block; cursor:pointer; text-transform: lowercase; }
-.menu-item.active + .submenu { display:block; }
-.submenu { display:none; margin-left:15px; }
-.submenu a:hover { text-decoration:none; }
-</style>
+    .menu-item, .submenu a { font-size:18px; margin:5px 0; color:#000; text-decoration:none; display:block; cursor:pointer; text-transform: lowercase; }
+    .menu-item.active + .submenu { display:block; }
+    .submenu { display:none; margin-left:15px; }
+    .submenu a:hover { text-decoration:none; }
+  </style>
 </head>
 <body>
 
 <div class="container">
   <div class="menu-col">
-    <a href="index.html" style="text-decoration:none; color:#000; display:block;">
+    <a href="./" style="text-decoration:none; color:#000; display:block;">
       <div class="menu-item" style="font-weight:bold;">index</div>
     </a>
 
@@ -37,18 +38,15 @@ body { margin:0; font-family:Arial, sans-serif; }
     <div class="submenu">
       <a href="gallery-sub1.html">submenu 1</a>
       <a href="gallery-sub2.html">submenu 2</a>
-      <a href="gallery/graphic-design/graphic-design.html">graphic design</a>
       <a href="gallery-sub4.html">submenu 4</a>
       <a href="gallery-sub5.html">submenu 5</a>
     </div>
 
-    <div class="menu-item">menu 3</div>
+    <div class="menu-item">graphic design</div>
     <div class="submenu">
-      <a href="menu3-sub1.html">submenu 1</a>
-      <a href="menu3-sub2.html">submenu 2</a>
-      <a href="menu3-sub3.html">submenu 3</a>
-      <a href="menu3-sub4.html">submenu 4</a>
-      <a href="menu3-sub5.html">submenu 5</a>
+      <a href="graphic-design/covers/">covers</a>
+      <a href="graphic-design/svp-urgent.html">svp urgent</a>
+      <a href="graphic-design/metal-birds.html">metal birds</a>
     </div>
 
     <div class="menu-item">menu 4</div>
@@ -71,29 +69,21 @@ body { margin:0; font-family:Arial, sans-serif; }
   </div>
 
   <div class="content-col">
-    <!-- no gallery on index -->
+    <!-- Put root page content here; no gallery -->
   </div>
 </div>
 
 <script>
 // Accordion menu with synced state
 const menuItems = document.querySelectorAll('.menu-item');
-
-// Load saved state
-const savedState = JSON.parse(localStorage.getItem('accordionState') || '{}');
-
+const savedState = JSON.parse(sessionStorage.getItem('accordionState') || '{}');
 menuItems.forEach((item, index) => {
-  // Restore saved state
   if (savedState[index]) item.classList.add('active');
-
-  // Toggle on click
   item.onclick = () => {
     item.classList.toggle('active');
-
-    // Save current state
     const state = {};
     menuItems.forEach((itm, i) => state[i] = itm.classList.contains('active'));
-    localStorage.setItem('accordionState', JSON.stringify(state));
+    sessionStorage.setItem('accordionState', JSON.stringify(state));
   };
 });
 </script>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gallery Template</title>
+  <link rel="icon" href="../../favicon.ico" type="image/x-icon">
+  <style>
+    body { margin:0; font-family:Arial, sans-serif; }
+    .container { display:flex; max-width:60%; margin:5% auto 0 auto; }
+    .menu-col { width:30%; padding:0 10px; box-sizing:border-box; }
+    .content-col { width:70%; padding:0 10px; box-sizing:border-box; }
+
+    .menu-item, .submenu a { font-size:18px; margin:5px 0; color:#000; text-decoration:none; display:block; cursor:pointer; text-transform: lowercase; }
+    .menu-item.active + .submenu { display:block; }
+    .submenu { display:none; margin-left:15px; }
+    .submenu a:hover { text-decoration:none; }
+
+    .gallery { max-width:100%; margin:0 auto; text-align:center; }
+    .preview-container { height:750px; margin-bottom:15px; display:flex; align-items:center; justify-content:center; gap:10px; }
+    .preview-container img { width:100%; height:100%; object-fit:contain; cursor:pointer; }
+    .thumbnail-container { display:flex; justify-content:center; gap:10px; margin-top:15px; }
+    .thumbnail-container img { width:70px; height:50px; object-fit:cover; cursor:pointer; opacity:0.7; transition:0.2s; }
+    .thumbnail-container img:hover, .thumbnail-container img.active { opacity:1; }
+    .arrow { font-size:32px; color:#000; cursor:pointer; user-select:none; transition:0.2s; }
+    .arrow:hover { color:#555; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="menu-col">
+    <a href="../../" style="text-decoration:none; color:#000; display:block;">
+      <div class="menu-item" style="font-weight:bold;">index</div>
+    </a>
+
+    <div class="menu-item">menu 1</div>
+    <div class="submenu">
+      <a href="../../menu1-sub1.html">submenu 1</a>
+      <a href="../../menu1-sub2.html">submenu 2</a>
+      <a href="../../menu1-sub3.html">submenu 3</a>
+      <a href="../../menu1-sub4.html">submenu 4</a>
+      <a href="../../menu1-sub5.html">submenu 5</a>
+    </div>
+
+    <div class="menu-item">gallery</div>
+    <div class="submenu">
+      <a href="../../gallery-sub1.html">submenu 1</a>
+      <a href="../../gallery-sub2.html">submenu 2</a>
+      <a href="../../gallery-sub4.html">submenu 4</a>
+      <a href="../../gallery-sub5.html">submenu 5</a>
+    </div>
+
+    <div class="menu-item">graphic design</div>
+    <div class="submenu">
+      <a href="../covers/">covers</a>
+      <a href="../svp-urgent.html">svp urgent</a>
+      <a href="../metal-birds.html">metal birds</a>
+    </div>
+
+    <div class="menu-item">menu 4</div>
+    <div class="submenu">
+      <a href="../../menu4-sub1.html">submenu 1</a>
+      <a href="../../menu4-sub2.html">submenu 2</a>
+      <a href="../../menu4-sub3.html">submenu 3</a>
+      <a href="../../menu4-sub4.html">submenu 4</a>
+      <a href="../../menu4-sub5.html">submenu 5</a>
+    </div>
+
+    <div class="menu-item">menu 5</div>
+    <div class="submenu">
+      <a href="../../menu5-sub1.html">submenu 1</a>
+      <a href="../../menu5-sub2.html">submenu 2</a>
+      <a href="../../menu5-sub3.html">submenu 3</a>
+      <a href="../../menu5-sub4.html">submenu 4</a>
+      <a href="../../menu5-sub5.html">submenu 5</a>
+    </div>
+  </div>
+
+  <div class="content-col">
+    <div class="gallery">
+      <div class="preview-container">
+        <span class="arrow arrow-left">&#10094;</span>
+        <img id="preview" src="cover1.png">
+        <span class="arrow arrow-right">&#10095;</span>
+      </div>
+      <div class="thumbnail-container" id="thumbnails"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Accordion menu
+const menuItems = document.querySelectorAll('.menu-item');
+const savedState = JSON.parse(sessionStorage.getItem('accordionState') || '{}');
+menuItems.forEach((item,index)=>{
+  if(savedState[index]) item.classList.add('active');
+  item.onclick = ()=>{ 
+    item.classList.toggle('active');
+    const state={}; menuItems.forEach((itm,i)=>state[i]=itm.classList.contains('active'));
+    sessionStorage.setItem('accordionState',JSON.stringify(state));
+  };
+});
+
+// Gallery
+const images = [
+"Visyura - Desolate (cover).png",
+"Visyura - Anima Sola (cover).png",
+"Visyura - EXPIATE (cover).png",
+"Popbot, Juha, Visyura, jhl, Fehu., glyphli, Exorbiter, (un)familiar, lukasipo) - Rope (cover).png",
+"Visyura - INNER FIELDS(cover).png",
+"Visyura - AIMLESS (cover).png",
+"Visyura - DISSOLVE (cover).png",
+"Visyura - FRAGMENTS (cover).png",
+"Visyura - ALLUVIUM (cover).png",
+"Visyura - A Spurious Porspering (Concept).png",
+];
+const preview = document.getElementById("preview");
+const thumbnails = document.getElementById("thumbnails");
+let current = 0;
+
+images.forEach((src,i)=>{
+  const img = document.createElement("img");
+  img.src = src;
+  if(i===0){ img.classList.add("active"); preview.src = src; }
+  img.onclick = ()=>showImage(i);
+  thumbnails.appendChild(img);
+});
+
+function showImage(i){
+  current=i;
+  preview.src=images[i];
+  thumbnails.querySelectorAll("img").forEach(t=>t.classList.remove("active"));
+  thumbnails.querySelectorAll("img")[i].classList.add("active");
+}
+
+document.querySelector('.arrow-left').onclick = ()=>showImage((current-1+images.length)%images.length);
+document.querySelector('.arrow-right').onclick = ()=>showImage((current+1)%images.length);
+preview.onclick = ()=>showImage((current+1)%images.length);
+</script>
+
+</body>
+</html>

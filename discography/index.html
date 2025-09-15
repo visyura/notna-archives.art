@@ -1,23 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>discography</title>
-  <link rel="icon" href="../favicon.ico" type="image/x-icon">
-  <style>
-    body { margin:0; font-family:Arial, sans-serif; }
-    .container { display:flex; max-width:60%; margin:3% auto 0 auto; }
-    .menu-col { width:30%; padding:0 10px; box-sizing:border-box; }
-    .content-col { width:70%; padding:0 10px; box-sizing:border-box; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>visyura</title>
+<link rel="icon" href="../favicon.ico" type="image/x-icon">
+<style>
+  body { margin:0; font-family:Arial, sans-serif; }
+  .container { display:flex; max-width:60%; margin:3% auto 0 auto; }
+  .menu-col { width:17%; padding:0 10px; box-sizing:border-box; }
+  .content-col { width:83%; padding:0 10px; box-sizing:border-box; }
 
-    .menu-item, .submenu a { font-size:18px; margin:5px 0; color:#000; text-decoration:none; display:block; cursor:pointer; text-transform: lowercase; }
-    .menu-item.active + .submenu { display:block; }
-    .submenu { display:none; margin-left:15px; }
-    .submenu a:hover { text-decoration:none; }
-
-    .text-block { margin-bottom:2rem; line-height:1.6; }
-  </style>
+  .menu-item, .submenu a { font-size:18px; margin:5px 0; color:#000; text-decoration:none; display:block; cursor:pointer; text-transform: lowercase; }
+  .submenu { display:none; margin-left:15px; }
+  .submenu a:hover { text-decoration:none; }
+</style>
 </head>
 <body>
 
@@ -29,7 +26,9 @@
 
     <div class="menu-item">discography</div>
     <div class="submenu">
-      <a href="visyura/">visyura</a>
+      <a href="../discography/visyura/">visyura</a>
+      <a href="../discography/project2/">project 2</a>
+      <a href="../discography/project3/">project 3</a>
     </div>
 
     <div class="menu-item">gallery</div>
@@ -67,9 +66,10 @@
   </div>
 
   <div class="content-col">
-    <div class="text-block">
+    <div class="profile">
+      <img src="vsy_logo_mask9.png" alt="" class="pfp">
+      <img src="vsy_banner_mask_black.png" alt="" class="banner">
     </div>
-  </div>
 </div>
 
 <script>
@@ -77,12 +77,16 @@ const menuItems = document.querySelectorAll('.menu-item');
 const savedState = JSON.parse(sessionStorage.getItem('accordionState') || '{}');
 menuItems.forEach((item, index) => {
   if (savedState[index]) item.classList.add('active');
-  item.onclick = () => {
+  item.addEventListener('click', () => {
+    const submenu = item.nextElementSibling;
+    if(submenu && submenu.classList.contains('submenu')){
+      submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
+    }
     item.classList.toggle('active');
     const state = {};
     menuItems.forEach((itm, i) => state[i] = itm.classList.contains('active'));
     sessionStorage.setItem('accordionState', JSON.stringify(state));
-  };
+  });
 });
 </script>
 

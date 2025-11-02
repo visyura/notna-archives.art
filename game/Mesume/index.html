@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>notna</title>
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<style>
+  body { margin:0; font-family:Arial, sans-serif; }
+  .container { display:flex; max-width:60%; margin:3% auto 0 auto; }
+  .menu-col { width:30%; padding:0 10px; box-sizing:border-box; }
+  .content-col { width:70%; padding:0 10px; box-sizing:border-box; }
+
+  .menu-item, .submenu a { font-size:18px; margin:5px 0; color:#000; text-decoration:none; display:block; cursor:pointer; text-transform: lowercase; }
+  .menu-item.active + .submenu { display:block; }
+  .submenu { display:none; margin-left:15px; }
+  .submenu a:hover { text-decoration:none; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="menu-col">
+    <a href="./" style="text-decoration:none; color:#000; display:block;">
+      <div class="menu-item" style="font-weight:bold;">index</div>
+    </a>
+
+    <div class="menu-item">music projects</div>
+    <div class="submenu">
+      <a href="music_projects/visyura/">visyura</a>
+      <a href="music_projects/project2/">project 2</a>
+      <a href="music_projects/project3/">project 3</a>
+    </div>
+
+    <div class="menu-item">gallery</div>
+    <div class="submenu">
+      <a href="gallery-sub1.html">gallery 1</a>
+      <a href="gallery-sub2.html">gallery 2</a>
+      <a href="gallery-sub3.html">gallery 3</a>
+      <a href="gallery-sub4.html">gallery 4</a>
+      <a href="gallery-sub5.html">gallery 5</a>
+    </div>
+
+    <div class="menu-item">graphic design</div>
+    <div class="submenu">
+      <a href="graphic-design/covers/">covers</a>
+      <a href="graphic-design/svp-urgent/">svp urgent</a>
+      <a href="graphic-design/metal-birds/">metal birds</a>
+    </div>
+
+    <div class="menu-item">menu 4</div>
+    <div class="submenu">
+      <a href="menu4-sub1.html">submenu 1</a>
+      <a href="menu4-sub2.html">submenu 2</a>
+      <a href="menu4-sub3.html">submenu 3</a>
+      <a href="menu4-sub4.html">submenu 4</a>
+      <a href="menu4-sub5.html">submenu 5</a>
+    </div>
+
+    <div class="menu-item">game ?</div>
+    <div class="submenu">
+      <a href="../../Mesume/index.html">Le Mésume</a>
+      <a href="menu5-sub2.html">submenu 2</a>
+      <a href="menu5-sub3.html">submenu 3</a>
+      <a href="menu5-sub4.html">submenu 4</a>
+      <a href="menu5-sub5.html">submenu 5</a>
+    </div>
+  </div>
+
+  <div class="content-col">
+    <!-- Root page content goes here -->
+  </div>
+</div>
+
+<script>
+const menuItems = document.querySelectorAll('.menu-item');
+const savedState = JSON.parse(sessionStorage.getItem('accordionState') || '{}');
+menuItems.forEach((item, index) => {
+  if (savedState[index]) item.classList.add('active');
+  item.onclick = () => {
+    item.classList.toggle('active');
+    const state = {};
+    menuItems.forEach((itm, i) => state[i] = itm.classList.contains('active'));
+    sessionStorage.setItem('accordionState', JSON.stringify(state));
+  };
+});
+</script>
+
+</body>
+</html>

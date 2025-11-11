@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>glaires</title>
+<link rel="icon" href="../favicon.ico" type="image/x-icon">
+<style>
+  body { margin:0; font-family:Arial, sans-serif; }
+  .container { display:flex; max-width:60%; margin:3% auto 0 auto; }
+  .menu-col { width:17%; padding:0 10px; box-sizing:border-box; }
+  .content-col { width:83%; padding:0 10px; box-sizing:border-box; }
+
+  .menu-item, .submenu a { font-size:18px; margin:5px 0; color:#000; text-decoration:none; display:block; cursor:pointer; text-transform: lowercase; }
+  .menu-item.active + .submenu { display:block; }
+  .submenu { display:none; margin-left:15px; }
+  .submenu a:hover { text-decoration:none; }
+
+  .profile { display:flex; align-items:stretch; margin-bottom:1.5rem; gap:0; }
+  .pfp { width:180px; height:180px; object-fit:cover; flex-shrink:0; }
+  .banner { flex:1; height:180px; object-fit:cover; }
+  .text-block { margin-bottom:1rem; line-height:1.2; }
+
+  .grid { display:grid; grid-template-columns: 30% 70%; gap:20px; align-items:start; }
+  .soundcloud iframe { width:100%; aspect-ratio:1/1; border:none; }
+  .text-col { display:flex; flex-direction:column; justify-content:flex-start; }
+  .text-col p { margin:0; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="menu-col">
+    <a href="../../" style="text-decoration:none; color:#000; display:block;">
+      <div class="menu-item" style="font-weight:bold;">index</div>
+    </a>
+
+    <div class="menu-item">music projects</div>
+    <div class="submenu">
+      <a href="../../music_projects/visyura/">visyura</a>
+      <a href="../../music_projects/in_plurals/">in plurals</a>
+      <a href="./">glaires</a>
+    </div>
+
+    <div class="menu-item">gallery</div>
+    <div class="submenu">
+      <a href="../gallery-sub1.html">submenu 1</a>
+      <a href="../gallery-sub2.html">submenu 2</a>
+      <a href="../gallery-sub4.html">submenu 4</a>
+      <a href="../gallery-sub5.html">submenu 5</a>
+    </div>
+
+    <div class="menu-item">graphic design</div>
+    <div class="submenu">
+      <a href="../../graphic-design/covers/">covers</a>
+      <a href="../../graphic-design/svp-urgent/">svp urgent</a>
+      <a href="../../graphic-design/metal-birds/">metal birds</a>
+    </div>
+
+    <div class="menu-item">menu 4</div>
+    <div class="submenu">
+      <a href="../menu4-sub1.html">submenu 1</a>
+      <a href="../menu4-sub2.html">submenu 2</a>
+      <a href="../menu4-sub3.html">submenu 3</a>
+      <a href="../menu4-sub4.html">submenu 4</a>
+      <a href="../menu4-sub5.html">submenu 5</a>
+    </div>
+
+    <div class="menu-item">menu 5</div>
+    <div class="submenu">
+      <a href="../menu5-sub1.html">submenu 1</a>
+      <a href="../menu5-sub2.html">submenu 2</a>
+      <a href="../menu5-sub3.html">submenu 3</a>
+      <a href="../menu5-sub4.html">submenu 4</a>
+      <a href="../menu5-sub5.html">submenu 5</a>
+    </div>
+  </div>
+
+  <div class="content-col">
+    <div class="profile">
+      <img src="glaires_background.jpg" alt="" class="banner">
+    </div>
+
+    <div class="text-block"> discovered rock, making electronic rock ? <br>
+      <br>
+
+cloudeater, alt rock, progressive Trying to sing genuinely but it's hard frérot   <br>  <br> 
+    
+       <div class="grid">
+
+  <div class="soundcloud">
+        <iframe src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/1883681612&color=%23000000&auto_play=false&hide_related=true&show_comments=true&show_user=false&show_reposts=false&visual=true"></iframe>
+      </div>
+      <div class="text-col"><p><b>self gate</b> <br> <br> exercised my self to sing and make low investement track on chain, did about 30 wips but they feel soulless. 
+        I'm glad I had that intetion but i didn't know where I was really going and didn't know what I wanted with this project. 
+        Now I know more my tastes and references. I talk a lot about my change in this project since I had a sort of artsit identiy crisis where everything 
+        I didn't enjoyed all things I did before. This shift hapenned progerssively and became really opressive to me so I sarted distancing myself and 
+        making other things aside of music too.</p></div>
+
+
+
+    </div>
+  </div>
+</div>
+
+<script src="https://w.soundcloud.com/player/api.js"></script>
+<script>
+const iframes = document.querySelectorAll('.soundcloud iframe');
+iframes.forEach(iframe => {
+  const widget = SC.Widget(iframe);
+  widget.bind(SC.Widget.Events.PAUSE, function() { widget.pause(); });
+  widget.bind(SC.Widget.Events.FINISH, function() { widget.pause(); });
+  widget.bind(SC.Widget.Events.PLAY, function() { /* allow normal play with comments */ });
+});
+</script>
+
+<script>
+const menuItems = document.querySelectorAll('.menu-item');
+const savedState = JSON.parse(sessionStorage.getItem('accordionState') || '{}');
+menuItems.forEach((item, index) => {
+  if (savedState[index]) item.classList.add('active');
+  item.onclick = () => {
+    item.classList.toggle('active');
+    const state = {};
+    menuItems.forEach((itm, i) => state[i] = itm.classList.contains('active'));
+    sessionStorage.setItem('accordionState', JSON.stringify(state));
+  };
+});
+</script>
+
+</body>
+</html>

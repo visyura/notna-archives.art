@@ -1,0 +1,46 @@
+{
+    "folder-color.pathColors": [
+        {
+            "folderPath": "WEB\\music_projects\\",
+            "color": "foldercolorizer.color_9999ff",
+            "badge": "MU"
+        },
+        {
+            "folderPath": "WEB\\music_projects\\visyura\\",
+            "color": "foldercolorizer.color_ff3333",
+            "badge": "VY"
+        },
+        {
+            "folderPath": "WEB\\music_projects\\index.html\\",
+            "badge": "MU"
+        },
+        {
+            "folderPath": "WEB\\music_projects\\in_plurals\\",
+            "color": "foldercolorizer.color_00ccff",
+            "badge": "PL"
+        },
+        {
+            "folderPath": "WEB\\music_projects\\glaires\\",
+            "color": "foldercolorizer.color_ffcc99",
+            "badge": "GL"
+        },
+        {
+            "folderPath": "WEB\\graphic-design\\",
+            "badge": "GD",
+            "color": "foldercolorizer.color_ff99cc"
+        },
+        {
+            "folderPath": "WEB\\graphic-design\\covers\\",
+            "badge": "CO",
+            "color": "foldercolorizer.color_ff3333"
+        },
+        {
+            "folderPath": "WEB\\graphic-design\\svp-urgent\\",
+            "color": "foldercolorizer.color_ff9933"
+        },
+        {
+            "folderPath": "WEB\\graphic-design\\metal-birds\\",
+            "color": "foldercolorizer.color_00ccff"
+        }
+    ]
+}

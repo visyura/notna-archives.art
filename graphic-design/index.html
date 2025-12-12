@@ -33,55 +33,7 @@
 <body>
 
 <div class="container">
-  <div class="menu-col">
-    <a href="../../" style="text-decoration:none; color:#000; display:block;">
-      <div class="menu-item" style="font-weight:bold;">index</div>
-    </a>
-
-    <div class="menu-item">menu 1</div>
-    <div class="submenu">
-      <a href="../../menu1-sub1.html">submenu 1</a>
-      <a href="../../menu1-sub2.html">submenu 2</a>
-      <a href="../../menu1-sub3.html">submenu 3</a>
-      <a href="../../menu1-sub4.html">submenu 4</a>
-      <a href="../../menu1-sub5.html">submenu 5</a>
-    </div>
-
-    <div class="menu-item">gallery</div>
-    <div class="submenu">
-    
-      <a href="graphic-design/covers/">covers</a>
-      <a href="../../gallery-sub4.html">submenu 4</a>
-      <a href="./">metal birds</a>
-    </div>
-
-    <div class="menu-item">menu 3</div>
-    <div class="submenu">
-      <a href="../../menu3-sub1.html">submenu 1</a>
-      <a href="../../menu3-sub2.html">submenu 2</a>
-      <a href="../../menu3-sub3.html">submenu 3</a>
-      <a href="../../menu3-sub4.html">submenu 4</a>
-      <a href="../../menu3-sub5.html">submenu 5</a>
-    </div>
-
-    <div class="menu-item">menu 4</div>
-    <div class="submenu">
-      <a href="../../menu4-sub1.html">submenu 1</a>
-      <a href="../../menu4-sub2.html">submenu 2</a>
-      <a href="../../menu4-sub3.html">submenu 3</a>
-      <a href="../../menu4-sub4.html">submenu 4</a>
-      <a href="../../menu4-sub5.html">submenu 5</a>
-    </div>
-
-    <div class="menu-item">menu 5</div>
-    <div class="submenu">
-      <a href="../../menu5-sub1.html">submenu 1</a>
-      <a href="../../menu5-sub2.html">submenu 2</a>
-      <a href="../../menu5-sub3.html">submenu 3</a>
-      <a href="../../menu5-sub4.html">submenu 4</a>
-      <a href="../../menu5-sub5.html">submenu 5</a>
-    </div>
-  </div>
+  <div id="menu-placeholder" class="menu-col"></div>
 
   <div class="content-col">
     <div class="gallery">
@@ -95,20 +47,8 @@
   </div>
 </div>
 
+<script src="/menu.js"></script>
 <script>
-// Accordion menu with synced state
-const menuItems = document.querySelectorAll('.menu-item');
-const savedState = JSON.parse(sessionStorage.getItem('accordionState') || '{}');
-menuItems.forEach((item, index) => {
-  if (savedState[index]) item.classList.add('active');
-  item.onclick = () => {
-    item.classList.toggle('active');
-    const state = {};
-    menuItems.forEach((itm, i) => state[i] = itm.classList.contains('active'));
-    sessionStorage.setItem('accordionState', JSON.stringify(state));
-  };
-});
-
 // Gallery images
 const images = ["cover1.png","cover2.png","cover3.png"];
 const preview = document.getElementById("preview");

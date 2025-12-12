@@ -18,8 +18,8 @@ body { margin:0; font-family:Arial, sans-serif; user-select:none; }
 
 .gallery { max-width:100%; margin:auto; text-align:center; display:flex; flex-direction:column; }
 
-.preview-container { width:100%; position:relative; overflow:hidden; margin:0; display:flex; justify-content:center; align-items:center; min-height:675px; }
-.preview-container img { display:block; object-fit:contain; transition:transform 0.2s; max-height:675px; max-width:100%; }
+.preview-container { width:100%; position:relative; overflow:hidden; margin:0; display:flex; justify-content:center; align-items:center; min-height:720px; }
+.preview-container img { display:block; object-fit:contain; transition:transform 0.2s; max-height:720px; max-width:100%; }
 
 .nav-left, .nav-right { position:absolute; cursor:pointer; z-index:1; user-select:none; top:0; }
 .nav-left { left:0; }
@@ -76,6 +76,7 @@ body { margin:0; font-family:Arial, sans-serif; user-select:none; }
 
   <div class="content-col">
     <div class="gallery">
+      <div style="margin-bottom:10px; text-align:left"> <b> Album Covers </b></div>
       <div class="preview-container" id="preview-container">
         <img id="preview">
         <div class="nav-left" id="prev"></div>
@@ -86,12 +87,13 @@ body { margin:0; font-family:Arial, sans-serif; user-select:none; }
   </div>
 </div>
 
+
 <script>
 const menuItems = document.querySelectorAll('.menu-item');
 const savedState = JSON.parse(sessionStorage.getItem('accordionState') || '{}');
 menuItems.forEach((item,index)=>{
   if(savedState[index]) item.classList.add('active');
-  item.onclick = ()=>{ 
+  item.onclick = ()=>{
     item.classList.toggle('active');
     const state={}; menuItems.forEach((itm,i)=>state[i]=itm.classList.contains('active'));
     sessionStorage.setItem('accordionState',JSON.stringify(state));
@@ -110,6 +112,7 @@ const images = [
 "Visyura - ALLUVIUM (cover).png",
 "Visyura - A Spurious Porspering (Concept).png",
 ];
+
 
 const preview = document.getElementById("preview");
 const thumbnails = document.getElementById("thumbnails");
@@ -134,7 +137,7 @@ function updateLayout(){
   navLeft.style.top = preview.offsetTop + "px";
   navLeft.style.height = preview.offsetHeight + "px";
   navLeft.style.width = preview.offsetWidth/2 + "px";
-  
+
   navRight.style.top = preview.offsetTop + "px";
   navRight.style.height = preview.offsetHeight + "px";
   navRight.style.width = preview.offsetWidth/2 + "px";

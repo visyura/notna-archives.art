@@ -7,9 +7,10 @@
 <link rel="icon" href="../../favicon.ico" type="image/x-icon">
 <style>
 body { margin:0; font-family:Arial, sans-serif; user-select:none; }
-.container { display:flex; max-width:60%; margin:3% auto 0 auto; align-items:flex-start; }
+.container { display:flex; max-width:70%; margin:3% auto 0 auto; align-items:flex-start; }
 .menu-col { width:15%; padding:0 10px; box-sizing:border-box; }
-.content-col { width:85%; padding:0 10px; box-sizing:border-box; display:flex; flex-direction:column; }
+.content-col { width:70%; padding:0 10px; box-sizing:border-box; display:flex; flex-direction:column; }
+.spacer-col { width:15%; padding:0 10px; box-sizing:border-box; }
 
 .menu-item, .submenu a { font-size:18px; margin:5px 0; color:#000; text-decoration:none; display:block; cursor:pointer; text-transform: lowercase; }
 .menu-item.active + .submenu { display:block; }
@@ -19,26 +20,27 @@ body { margin:0; font-family:Arial, sans-serif; user-select:none; }
 .gallery { max-width:100%; margin:auto; text-align:center; display:flex; flex-direction:column; }
 
 .preview-container { width:100%; position:relative; overflow:hidden; margin:0; display:flex; justify-content:center; align-items:center; min-height:720px; }
-.preview-container img { display:block; object-fit:contain; transition:transform 0.2s; max-height:720px; max-width:100%; }
+.preview-container img { display:block; object-fit:contain; transition:transform 0.2s; max-height:800px; max-width:100%; }
 
 .nav-left, .nav-right { position:absolute; cursor:pointer; z-index:1; user-select:none; top:0; }
 .nav-left { left:0; }
 .nav-right { right:0; }
 
-.thumbnail-container { display:flex; flex-wrap:wrap; justify-content:flex-start; gap:5px; margin:5px 0 0 0; width:100%; box-sizing:border-box; }
-.thumbnail-container img { width:70px; height:70px; object-fit:cover; cursor:pointer; opacity:0.7; transition:0.2s; margin:0; }
+.thumbnail-container { display:flex; flex-wrap:wrap; justify-content:space-between; gap:5px; margin:5px 0 0 0; width:100%; box-sizing:border-box; }
+.thumbnail-container img { flex:1; min-width:70px; aspect-ratio:1/1; object-fit:contain; cursor:pointer; opacity:0.7; transition:0.2s; margin:0; }
 .thumbnail-container img.active { opacity:1; }
+
 </style>
 </head>
 <body>
 
 <div class="container">
   <div id="menu-placeholder" class="menu-col"></div>
-  <script src="/menu.js"></script>
 
   <div class="content-col">
     <div class="gallery">
-      <div style="margin-bottom:10px; text-align:left"> <b> Album Covers </b></div>
+      <div style="margin-bottom:10px; text-align:left"> <b> Music Artworks
+        <br> </b> Covers of various tracks </div>
       <div class="preview-container" id="preview-container">
         <img id="preview">
         <div class="nav-left" id="prev"></div>
@@ -46,7 +48,35 @@ body { margin:0; font-family:Arial, sans-serif; user-select:none; }
       </div>
       <div class="thumbnail-container" id="thumbnails"></div>
     </div>
+
+    <div class="gallery" style="margin-top:40px;">
+      <div style="margin-bottom:10px; text-align:left"> <b> SVP URGENT </b>
+        <br> </b> A weekly series wtih friends where each created visual art based on the same word</div>
+
+
+      <div class="preview-container" id="preview-container2">
+        <img id="preview2">
+        <div class="nav-left" id="prev2"></div>
+        <div class="nav-right" id="next2"></div>
+      </div>
+      <div class="thumbnail-container" id="thumbnails2"></div>
+    </div>
+
+    <div class="gallery" style="margin-top:40px;">
+      <div style="margin-bottom:10px; text-align:left"> <b> Metal Birds </b></div>
+      <div class="preview-container" id="preview-container3">
+        <img id="preview3">
+        <div class="nav-left" id="prev3"></div>
+        <div class="nav-right" id="next3"></div>
+      </div>
+      <div class="thumbnail-container" id="thumbnails3"></div>
+    </div>
   </div>
+
+  <div class="spacer-col">
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+  </div>
+
 </div>
 
 
@@ -94,7 +124,7 @@ function updateLayout(){
   navRight.style.height = preview.offsetHeight + "px";
   navRight.style.width = preview.offsetWidth/2 + "px";
 
-  thumbnails.style.width = preview.offsetWidth + "px";
+  thumbnails.style.width = rect.width + "px";
 }
 
 // thumbnails
@@ -115,6 +145,118 @@ window.addEventListener('resize', updateLayout);
 // initial display without shiftinge
 preview.src = images[0];
 updateLayout();
+
+// Gallery 2: SVP URGENT
+const images2 = [
+"../svp-urgent/vsy_svp6_bang.png",
+"../svp-urgent/vsy_svp4_contain.png",
+"../svp-urgent/vsy_svp3_bow.png",
+"../svp-urgent/vsy_svp1_absorb.png"
+];
+
+const preview2 = document.getElementById("preview2");
+const thumbnails2 = document.getElementById("thumbnails2");
+const navLeft2 = document.getElementById("prev2");
+const navRight2 = document.getElementById("next2");
+let current2 = 0;
+
+images2.forEach(src => { const i = new Image(); i.src = src; });
+
+function showImage2(i){
+  current2 = i;
+  preview2.src = images2[i];
+  thumbnails2.querySelectorAll("img").forEach(t=>t.classList.remove("active"));
+  thumbnails2.querySelectorAll("img")[i].classList.add("active");
+}
+
+function updateLayout2(){
+  const rect = preview2.getBoundingClientRect();
+  navLeft2.style.top = preview2.offsetTop + "px";
+  navLeft2.style.height = preview2.offsetHeight + "px";
+  navLeft2.style.width = preview2.offsetWidth/2 + "px";
+
+  navRight2.style.top = preview2.offsetTop + "px";
+  navRight2.style.height = preview2.offsetHeight + "px";
+  navRight2.style.width = preview2.offsetWidth/2 + "px";
+
+  thumbnails2.style.width = rect.width + "px";
+}
+
+images2.forEach((src,i)=>{
+  const img = document.createElement("img");
+  img.src = src;
+  img.addEventListener('click', ()=>showImage2(i));
+  thumbnails2.appendChild(img);
+});
+thumbnails2.querySelectorAll("img")[0].classList.add("active");
+
+navLeft2.addEventListener('click', ()=>showImage2((current2-1+images2.length)%images2.length));
+navRight2.addEventListener('click', ()=>showImage2((current2+1)%images2.length));
+
+preview2.addEventListener('load', updateLayout2);
+window.addEventListener('resize', updateLayout2);
+
+preview2.src = images2[0];
+updateLayout2();
+
+// Gallery 3: Metal Birds
+const images3 = [
+"../metal-birds/metal birds 2b.png",
+"../metal-birds/metal birds 10.png",
+"../metal-birds/metal birds 11.png",
+"../metal-birds/metal birds 12.png",
+"../metal-birds/metal birds 13.png",
+"../metal-birds/metal birds 14.png",
+"../metal-birds/metal birds 15.png",
+"../metal-birds/metal birds 16.png",
+"../metal-birds/metal birds 17.png",
+"../metal-birds/metal birds 18.png",
+];
+
+const preview3 = document.getElementById("preview3");
+const thumbnails3 = document.getElementById("thumbnails3");
+const navLeft3 = document.getElementById("prev3");
+const navRight3 = document.getElementById("next3");
+let current3 = 0;
+
+images3.forEach(src => { const i = new Image(); i.src = src; });
+
+function showImage3(i){
+  current3 = i;
+  preview3.src = images3[i];
+  thumbnails3.querySelectorAll("img").forEach(t=>t.classList.remove("active"));
+  thumbnails3.querySelectorAll("img")[i].classList.add("active");
+}
+
+function updateLayout3(){
+  const rect = preview3.getBoundingClientRect();
+  navLeft3.style.top = preview3.offsetTop + "px";
+  navLeft3.style.height = preview3.offsetHeight + "px";
+  navLeft3.style.width = preview3.offsetWidth/2 + "px";
+
+  navRight3.style.top = preview3.offsetTop + "px";
+  navRight3.style.height = preview3.offsetHeight + "px";
+  navRight3.style.width = preview3.offsetWidth/2 + "px";
+
+  thumbnails3.style.width = rect.width + "px";
+}
+
+images3.forEach((src,i)=>{
+  const img = document.createElement("img");
+  img.src = src;
+  img.addEventListener('click', ()=>showImage3(i));
+  thumbnails3.appendChild(img);
+});
+thumbnails3.querySelectorAll("img")[0].classList.add("active");
+
+navLeft3.addEventListener('click', ()=>showImage3((current3-1+images3.length)%images3.length));
+navRight3.addEventListener('click', ()=>showImage3((current3+1)%images3.length));
+
+preview3.addEventListener('load', updateLayout3);
+window.addEventListener('resize', updateLayout3);
+
+preview3.src = images3[0];
+updateLayout3();
 </script>
 
 </body>

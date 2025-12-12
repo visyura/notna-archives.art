@@ -31,25 +31,8 @@ body { margin:0; font-family:Arial, sans-serif; user-select:none; }
 .nav-left { left:0; }
 .nav-right { right:0; }
 
-.thumbnail-container { 
-  display:flex; 
-  flex-wrap:wrap; 
-  justify-content:flex-start; 
-  gap:5px; 
-  margin:5px 0 0 0; 
-  width:100%; 
-  box-sizing:border-box; 
-}
-
-.thumbnail-container img { 
-  height:70px;       /* fixed height */ 
-  width:auto;        /* preserve aspect ratio */ 
-  object-fit:contain; 
-  cursor:pointer; 
-  opacity:0.7; 
-  transition:0.2s; 
-  margin:0; 
-}
+.thumbnail-container { display:flex; flex-wrap:wrap; justify-content:space-between; gap:5px; margin:5px 0 0 0; width:100%; box-sizing:border-box; }
+.thumbnail-container img { flex:1; min-width:70px; aspect-ratio:1/1; object-fit:contain; cursor:pointer; opacity:0.7; transition:0.2s; margin:0; }
 
 .thumbnail-container img.active { 
   opacity:1; 
@@ -63,6 +46,7 @@ body { margin:0; font-family:Arial, sans-serif; user-select:none; }
 
   <div class="content-col">
     <div class="gallery">
+      <div style="margin-bottom:10px; text-align:left"> <b> SVP URGENT </b></div>
       <div class="preview-container" id="preview-container">
         <img id="preview">
         <div class="nav-left" id="prev"></div>
@@ -103,12 +87,12 @@ function updateLayout(){
   navLeft.style.top = preview.offsetTop + "px";
   navLeft.style.height = preview.offsetHeight + "px";
   navLeft.style.width = preview.offsetWidth/2 + "px";
-  
+
   navRight.style.top = preview.offsetTop + "px";
   navRight.style.height = preview.offsetHeight + "px";
   navRight.style.width = preview.offsetWidth/2 + "px";
 
-  thumbnails.style.width = preview.offsetWidth + "px";
+  thumbnails.style.width = rect.width + "px";
 }
 
 // thumbnails

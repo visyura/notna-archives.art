@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Photography</title>
+<link rel="icon" href="../favicon.ico" type="image/x-icon">
+<style>
+body { margin:0; font-family:Arial, sans-serif; }
+.container { display:flex; max-width:70%; margin:3% auto 0 auto; align-items:flex-start; justify-content:center; }
+.menu-col { width:15%; padding:0 10px; box-sizing:border-box; }
+.content-col { width:70%; padding:0 10px; box-sizing:border-box; display:flex; flex-direction:column; align-items:center; }
+.spacer-col { width:15%; padding:0 10px; box-sizing:border-box; }
+
+.menu-item, .submenu a { font-size:18px; margin:5px 0; color:#000; text-decoration:none; display:block; cursor:pointer; text-transform: lowercase; }
+.menu-item.active + .submenu { display:block; }
+.submenu { display:none; margin-left:15px; }
+.submenu a:hover { text-decoration:none; }
+
+.gallery { max-width:100%; margin:0; text-align:left; display:flex; flex-direction:column; }
+
+.preview-container { width:100%; position:relative; overflow:hidden; margin:0; display:flex; justify-content:center; align-items:center; }
+.preview-container img { display:block; object-fit:contain; transition:transform 0.2s; max-width:100%; width:auto; height:auto; }
+
+.nav-left, .nav-right { position:absolute; cursor:pointer; z-index:1; user-select:none; top:0; }
+.nav-left { left:0; }
+.nav-right { right:0; }
+
+.thumbnail-container { display:flex; flex-wrap:wrap; justify-content:space-between; gap:5px; margin:5px 0 0 0; width:100%; box-sizing:border-box; }
+.thumbnail-container img { flex:1; min-width:70px; object-fit:contain; cursor:pointer; opacity:0.7; transition:0.2s; margin:0; }
+.thumbnail-container img.active { opacity:1; }
+
+#thumbnails { justify-content:flex-start; }
+#thumbnails img { flex:0 0 calc((100% - 45px) / 10); aspect-ratio:auto; }
+
+#preview-container { height:auto; }
+
+</style>
+</head>
+<body>
+
+<div id="menu-placeholder" style="position:fixed; left:15%; width:15%; padding:0 10px; box-sizing:border-box; max-height:0; overflow:visible;"></div>
+
+<div class="container">
+  <div class="menu-col"></div>
+  <div class="content-col">
+    <div class="gallery">
+      <div style="margin-bottom:10px; text-align:left"> <b> Session test
+        <br> </b> Test to display pics! </div>
+      <div class="preview-container" id="preview-container">
+        <img id="preview">
+        <div class="nav-left" id="prev"></div>
+        <div class="nav-right" id="next"></div>
+      </div>
+      <div class="thumbnail-container" id="thumbnails"></div>
+    </div>
+  </div>
+  <div class="spacer-col">
+    <div id="image-note" style="text-align:left; line-height:1.2; overflow-y:auto;"></div>
+  </div>
+</div>
+
+
+<script src="/menu.js"></script>
+<script>
+const images = [
+"abstract/DSC00389.JPG",
+"abstract/DSC00390.JPG",
+"abstract/DSC00391.JPG",
+"abstract/DSC00392.JPG",
+"abstract/DSC00396.JPG",
+"abstract/DSC00397.JPG",
+"abstract/DSC00398.JPG",
+"abstract/DSC00399.JPG",
+"abstract/DSC00400.JPG",
+"abstract/DSC00401.JPG",
+"abstract/DSC00402.JPG",
+"abstract/DSC00403.JPG",
+"abstract/DSC00404.JPG",
+"abstract/DSC00405.JPG",
+];
+
+const notes = [
+"DSC00389",
+"DSC00390",
+"DSC00391",
+"DSC00392",
+"DSC00396",
+"DSC00397",
+"DSC00398",
+"DSC00399",
+"DSC00400",
+"DSC00401",
+"DSC00402",
+"DSC00403",
+"DSC00404",
+"DSC00405",
+];
+
+const noteDisplay = document.getElementById("image-note");
+const preview = document.getElementById("preview");
+const thumbnails = document.getElementById("thumbnails");
+const navLeft = document.getElementById("prev");
+const navRight = document.getElementById("next");
+const previewContainer = document.getElementById("preview-container");
+let current = 0;
+let scale = 1;
+
+// preload images
+images.forEach(src => { const i = new Image(); i.src = src; });
+
+function showImage(i){
+  current = i;
+  preview.src = images[i];
+  thumbnails.querySelectorAll("img").forEach(t=>t.classList.remove("active"));
+  thumbnails.querySelectorAll("img")[i].classList.add("active");
+  noteDisplay.innerHTML = notes[i];
+}
+
+function updateLayout(){
+  const rect = preview.getBoundingClientRect();
+  navLeft.style.top = preview.offsetTop + "px";
+  navLeft.style.height = preview.offsetHeight + "px";
+  navLeft.style.width = preview.offsetWidth/2 + "px";
+
+  navRight.style.top = preview.offsetTop + "px";
+  navRight.style.height = preview.offsetHeight + "px";
+  navRight.style.width = preview.offsetWidth/2 + "px";
+
+  thumbnails.style.width = rect.width + "px";
+
+  const previewContainer = document.getElementById('preview-container');
+  const gallery = previewContainer.parentElement;
+  noteDisplay.style.marginTop = (previewContainer.offsetTop - gallery.offsetTop) + "px";
+  noteDisplay.style.height = previewContainer.offsetHeight + "px";
+}
+
+// thumbnails
+images.forEach((src,i)=>{
+  const img = document.createElement("img");
+  img.src = src;
+  img.addEventListener('click', ()=>showImage(i));
+  thumbnails.appendChild(img);
+});
+thumbnails.querySelectorAll("img")[0].classList.add("active");
+
+navLeft.addEventListener('click', ()=>showImage((current-1+images.length)%images.length));
+navRight.addEventListener('click', ()=>showImage((current+1)%images.length));
+
+preview.addEventListener('load', updateLayout);
+window.addEventListener('resize', updateLayout);
+
+// initial display without shiftinge
+preview.src = images[0];
+noteDisplay.innerHTML = notes[0];
+updateLayout();
+
+// Align menu with first container
+function alignMenu(){
+  const firstContainer = document.querySelector('.container');
+  const menuPlaceholder = document.getElementById('menu-placeholder');
+  if(firstContainer && menuPlaceholder){
+    // Get the container's position from the top of the viewport
+    const containerRect = firstContainer.getBoundingClientRect();
+    // Set menu top to align with container top
+    menuPlaceholder.style.top = (window.scrollY + containerRect.top) + 'px';
+    // Set max-height to match container height
+    menuPlaceholder.style.maxHeight = containerRect.height + 'px';
+  }
+}
+
+window.addEventListener('load', alignMenu);
+window.addEventListener('resize', alignMenu);
+</script>
+
+</body>
+</html>

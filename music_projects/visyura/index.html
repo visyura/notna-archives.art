@@ -23,8 +23,11 @@
   .text-block { margin-bottom:1rem; line-height:1.2; }
 
   .grid { display:grid; grid-template-columns: 30% 70%; gap:20px; align-items:start; }
-  .soundcloud iframe { width:100%; aspect-ratio:1/1; border:none; }
-  .text-col { display:flex; flex-direction:column; justify-content:flex-start; }
+  .soundcloud { overflow:hidden; display:block; text-decoration:none; }
+  .soundcloud iframe { width:100%; aspect-ratio:1/1; border:none; display:block; margin:0; padding:0; }
+  .soundcloud img { width:100%; aspect-ratio:1/1; object-fit:cover; display:block; }
+
+  .text-col { display:flex; flex-direction:column; justify-content:flex-start; height:100%; }
   .text-col p { margin:0; }
 </style>
 </head>
@@ -120,13 +123,6 @@ Grown from internet music
 
 <script src="https://w.soundcloud.com/player/api.js"></script>
 <script>
-const iframes = document.querySelectorAll('.soundcloud iframe');
-iframes.forEach(iframe => {
-  const widget = SC.Widget(iframe);
-  widget.bind(SC.Widget.Events.PAUSE, function() { widget.pause(); });
-  widget.bind(SC.Widget.Events.FINISH, function() { widget.pause(); });
-  widget.bind(SC.Widget.Events.PLAY, function() { /* allow normal play with comments */ });
-});
 </script>
 
 <script src="/menu.js"></script>

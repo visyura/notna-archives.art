@@ -6,11 +6,11 @@
 <title>Gallery Template</title>
 <link rel="icon" href="../../favicon.ico" type="image/x-icon">
 <style>
-body { margin:0; font-family:Arial, sans-serif; user-select:none; }
-.container { display:flex; max-width:70%; margin:3% auto 0 auto; align-items:flex-start; }
+body { margin:0; font-family:Arial, sans-serif; }
+.container { display:flex; max-width:70%; margin:3% auto 0 auto; align-items:flex-start; justify-content:center; }
 .menu-col { width:15%; padding:0 10px; box-sizing:border-box; }
-.content-col { width:60%; padding:0 10px; box-sizing:border-box; display:flex; flex-direction:column; }
-.spacer-col { width:25%; padding:0 10px; box-sizing:border-box; }
+.content-col { width:70%; padding:0 10px; box-sizing:border-box; display:flex; flex-direction:column; align-items:center; }
+.spacer-col { width:15%; padding:0 10px; box-sizing:border-box; }
 
 .menu-item, .submenu a { font-size:18px; margin:5px 0; color:#000; text-decoration:none; display:block; cursor:pointer; text-transform: lowercase; }
 .menu-item.active + .submenu { display:block; }
@@ -19,8 +19,8 @@ body { margin:0; font-family:Arial, sans-serif; user-select:none; }
 
 .gallery { max-width:100%; margin:0; text-align:left; display:flex; flex-direction:column; }
 
-.preview-container { width:100%; position:relative; overflow:hidden; margin:0; display:flex; justify-content:flex-start; align-items:center; min-height:720px; }
-.preview-container img { display:block; object-fit:contain; transition:transform 0.2s; max-height:800px; max-width:100%; }
+.preview-container { width:100%; position:relative; overflow:hidden; margin:0; display:flex; justify-content:center; align-items:center; aspect-ratio:1/1; }
+.preview-container img { display:block; object-fit:contain; transition:transform 0.2s; max-width:100%; max-height:100%; width:auto; height:auto; }
 
 .nav-left, .nav-right { position:absolute; cursor:pointer; z-index:1; user-select:none; top:0; }
 .nav-left { left:0; }
@@ -30,16 +30,25 @@ body { margin:0; font-family:Arial, sans-serif; user-select:none; }
 .thumbnail-container img { flex:1; min-width:70px; aspect-ratio:1/1; object-fit:contain; cursor:pointer; opacity:0.7; transition:0.2s; margin:0; }
 .thumbnail-container img.active { opacity:1; }
 
+#thumbnails2 { justify-content:flex-start; }
+#thumbnails2 img { flex:0 0 calc((100% - 45px) / 10); }
+
+#thumbnails3 { justify-content:flex-start; }
+#thumbnails3 img { flex:0 0 calc((100% - 45px) / 10); aspect-ratio:auto; }
+
+#preview-container3 { aspect-ratio:auto; height:auto; }
+
 </style>
 </head>
 <body>
 
-<div class="container">
-  <div id="menu-placeholder" class="menu-col"></div>
+<div id="menu-placeholder" style="position:fixed; left:15%; width:15%; padding:0 10px; box-sizing:border-box; max-height:0; overflow:visible;"></div>
 
+<div class="container">
+  <div class="menu-col"></div>
   <div class="content-col">
     <div class="gallery">
-      <div style="margin-bottom:10px; text-align:left"> <b> Music Artworks
+      <div id="music-artworks-title" style="margin-bottom:10px; text-align:left"> <b> Music Artworks
         <br> </b> Covers of various tracks </div>
       <div class="preview-container" id="preview-container">
         <img id="preview">
@@ -48,12 +57,18 @@ body { margin:0; font-family:Arial, sans-serif; user-select:none; }
       </div>
       <div class="thumbnail-container" id="thumbnails"></div>
     </div>
+  </div>
+  <div class="spacer-col">
+    <div id="image-note" style="text-align:left; line-height:1.2; overflow-y:auto;"></div>
+  </div>
+</div>
 
-    <div class="gallery" style="margin-top:40px;">
+<div class="container" style="margin-top:40px;">
+  <div class="menu-col"></div>
+  <div class="content-col">
+    <div class="gallery">
       <div style="margin-bottom:10px; text-align:left"> <b> SVP URGENT </b>
         <br> </b> A weekly series wtih friends where each created visual art based on the same word</div>
-
-
       <div class="preview-container" id="preview-container2">
         <img id="preview2">
         <div class="nav-left" id="prev2"></div>
@@ -61,9 +76,18 @@ body { margin:0; font-family:Arial, sans-serif; user-select:none; }
       </div>
       <div class="thumbnail-container" id="thumbnails2"></div>
     </div>
+  </div>
+  <div class="spacer-col">
+    <div id="image-note2" style="text-align:left; line-height:1.2; overflow-y:auto;"></div>
+  </div>
+</div>
 
-    <div class="gallery" style="margin-top:40px;">
-      <div style="margin-bottom:10px; text-align:left"> <b> Metal Birds </b></div>
+<div class="container" style="margin-top:40px;">
+  <div class="menu-col"></div>
+  <div class="content-col">
+    <div class="gallery">
+      <div style="margin-bottom:10px; text-align:left"> <b> Metal Birds </b>
+      <br> Metalheart inspired thingy i made for postcard christams gifts on a whim</div>
       <div class="preview-container" id="preview-container3">
         <img id="preview3">
         <div class="nav-left" id="prev3"></div>
@@ -72,11 +96,9 @@ body { margin:0; font-family:Arial, sans-serif; user-select:none; }
       <div class="thumbnail-container" id="thumbnails3"></div>
     </div>
   </div>
-
   <div class="spacer-col">
-    <div id="image-note" style="text-align:left; line-height:1.2; overflow-y:auto; margin-top:45px;"></div>
+    <div id="image-note3" style="text-align:left; line-height:1.2; overflow-y:auto;"></div>
   </div>
-
 </div>
 
 
@@ -159,7 +181,11 @@ function updateLayout(){
   navRight.style.width = preview.offsetWidth/2 + "px";
 
   thumbnails.style.width = rect.width + "px";
-  noteDisplay.style.maxHeight = preview.offsetHeight + "px";
+
+  const previewContainer = document.getElementById('preview-container');
+  const gallery = previewContainer.parentElement;
+  noteDisplay.style.marginTop = (previewContainer.offsetTop - gallery.offsetTop) + "px";
+  noteDisplay.style.height = previewContainer.offsetHeight + "px";
 }
 
 // thumbnails
@@ -190,6 +216,7 @@ const images2 = [
 "svp-urgent/vsy_svp1_absorb.png"
 ];
 
+const noteDisplay2 = document.getElementById("image-note2");
 const preview2 = document.getElementById("preview2");
 const thumbnails2 = document.getElementById("thumbnails2");
 const navLeft2 = document.getElementById("prev2");
@@ -203,11 +230,11 @@ function showImage2(i){
   preview2.src = images2[i];
   thumbnails2.querySelectorAll("img").forEach(t=>t.classList.remove("active"));
   thumbnails2.querySelectorAll("img")[i].classList.add("active");
-  noteDisplay.innerHTML = notes2[i];
+  noteDisplay2.innerHTML = notes2[i];
 }
 
 function updateLayout2(){
-  const rect = preview2.getBoundingClientRect();
+  const rect = preview.getBoundingClientRect();
   navLeft2.style.top = preview2.offsetTop + "px";
   navLeft2.style.height = preview2.offsetHeight + "px";
   navLeft2.style.width = preview2.offsetWidth/2 + "px";
@@ -217,7 +244,11 @@ function updateLayout2(){
   navRight2.style.width = preview2.offsetWidth/2 + "px";
 
   thumbnails2.style.width = rect.width + "px";
-  noteDisplay.style.maxHeight = preview2.offsetHeight + "px";
+
+  const previewContainer2 = document.getElementById('preview-container2');
+  const gallery2 = previewContainer2.parentElement;
+  noteDisplay2.style.marginTop = (previewContainer2.offsetTop - gallery2.offsetTop) + "px";
+  noteDisplay2.style.height = previewContainer2.offsetHeight + "px";
 }
 
 images2.forEach((src,i)=>{
@@ -235,6 +266,7 @@ preview2.addEventListener('load', updateLayout2);
 window.addEventListener('resize', updateLayout2);
 
 preview2.src = images2[0];
+noteDisplay2.innerHTML = notes2[0];
 updateLayout2();
 
 // Gallery 3: Metal Birds
@@ -251,6 +283,7 @@ const images3 = [
 "metal-birds/metal birds 18.png",
 ];
 
+const noteDisplay3 = document.getElementById("image-note3");
 const preview3 = document.getElementById("preview3");
 const thumbnails3 = document.getElementById("thumbnails3");
 const navLeft3 = document.getElementById("prev3");
@@ -264,11 +297,11 @@ function showImage3(i){
   preview3.src = images3[i];
   thumbnails3.querySelectorAll("img").forEach(t=>t.classList.remove("active"));
   thumbnails3.querySelectorAll("img")[i].classList.add("active");
-  noteDisplay.innerHTML = notes3[i];
+  noteDisplay3.innerHTML = notes3[i];
 }
 
 function updateLayout3(){
-  const rect = preview3.getBoundingClientRect();
+  const rect = preview.getBoundingClientRect();
   navLeft3.style.top = preview3.offsetTop + "px";
   navLeft3.style.height = preview3.offsetHeight + "px";
   navLeft3.style.width = preview3.offsetWidth/2 + "px";
@@ -278,7 +311,11 @@ function updateLayout3(){
   navRight3.style.width = preview3.offsetWidth/2 + "px";
 
   thumbnails3.style.width = rect.width + "px";
-  noteDisplay.style.maxHeight = preview3.offsetHeight + "px";
+
+  const previewContainer3 = document.getElementById('preview-container3');
+  const gallery3 = previewContainer3.parentElement;
+  noteDisplay3.style.marginTop = (previewContainer3.offsetTop - gallery3.offsetTop) + "px";
+  noteDisplay3.style.height = previewContainer3.offsetHeight + "px";
 }
 
 images3.forEach((src,i)=>{
@@ -296,7 +333,25 @@ preview3.addEventListener('load', updateLayout3);
 window.addEventListener('resize', updateLayout3);
 
 preview3.src = images3[0];
+noteDisplay3.innerHTML = notes3[0];
 updateLayout3();
+
+// Align menu with first container
+function alignMenu(){
+  const firstContainer = document.querySelector('.container');
+  const menuPlaceholder = document.getElementById('menu-placeholder');
+  if(firstContainer && menuPlaceholder){
+    // Get the container's position from the top of the viewport
+    const containerRect = firstContainer.getBoundingClientRect();
+    // Set menu top to align with container top
+    menuPlaceholder.style.top = (window.scrollY + containerRect.top) + 'px';
+    // Set max-height to match container height
+    menuPlaceholder.style.maxHeight = containerRect.height + 'px';
+  }
+}
+
+window.addEventListener('load', alignMenu);
+window.addEventListener('resize', alignMenu);
 </script>
 
 </body>

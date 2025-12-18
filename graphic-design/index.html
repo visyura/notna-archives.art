@@ -1,34 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>graphic design</title>
-  <link rel="icon" href="favicon.ico" type="image/x-icon">
-  <style>
-    body { margin:0; font-family:Arial, sans-serif; }
-    .container { display:flex; max-width:60%; margin:5% auto 0 auto; }
-    .menu-col { width:30%; padding:0 10px; box-sizing:border-box; }
-    .content-col { width:70%; padding:0 10px; box-sizing:border-box; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gallery Template</title>
+<link rel="icon" href="../../favicon.ico" type="image/x-icon">
+<style>
+body { margin:0; font-family:Arial, sans-serif; user-select:none; }
+.container { display:flex; max-width:70%; margin:3% auto 0 auto; align-items:flex-start; }
+.menu-col { width:15%; padding:0 10px; box-sizing:border-box; }
+.content-col { width:60%; padding:0 10px; box-sizing:border-box; display:flex; flex-direction:column; }
+.spacer-col { width:25%; padding:0 10px; box-sizing:border-box; }
 
-    .menu-item, .submenu a { font-size:18px; margin:5px 0; color:#000; text-decoration:none; display:block; cursor:pointer; text-transform: lowercase; }
-    .menu-item.active + .submenu { display:block; }
-    .submenu { display:none; margin-left:15px; }
-    .submenu a:hover { text-decoration:none; }
+.menu-item, .submenu a { font-size:18px; margin:5px 0; color:#000; text-decoration:none; display:block; cursor:pointer; text-transform: lowercase; }
+.menu-item.active + .submenu { display:block; }
+.submenu { display:none; margin-left:15px; }
+.submenu a:hover { text-decoration:none; }
 
-    /* Gallery styling */
-    .gallery { max-width:100%; margin:0 auto; text-align:center; }
-    .preview-container { height:750px; margin-bottom:15px; display:flex; align-items:center; justify-content:center; gap:10px; } /* 50% larger */
-    .preview-container img { width:100%; height:100%; object-fit:contain; cursor:pointer; }
+.gallery { max-width:100%; margin:0; text-align:left; display:flex; flex-direction:column; }
 
-    .thumbnail-container { display:flex; justify-content:center; gap:10px; margin-top:15px; }
-    .thumbnail-container img { width:70px; height:50px; object-fit:cover; cursor:pointer; opacity:0.7; transition:0.2s; } /* 30% smaller */
-    .thumbnail-container img:hover, .thumbnail-container img.active { opacity:1; }
+.preview-container { width:100%; position:relative; overflow:hidden; margin:0; display:flex; justify-content:flex-start; align-items:center; min-height:720px; }
+.preview-container img { display:block; object-fit:contain; transition:transform 0.2s; max-height:800px; max-width:100%; }
 
-    /* Arrows outside preview */
-    .arrow { font-size:32px; color:#000; cursor:pointer; user-select:none; transition:0.2s; }
-    .arrow:hover { color:#555; }
-  </style>
+.nav-left, .nav-right { position:absolute; cursor:pointer; z-index:1; user-select:none; top:0; }
+.nav-left { left:0; }
+.nav-right { right:0; }
+
+.thumbnail-container { display:flex; flex-wrap:wrap; justify-content:space-between; gap:5px; margin:5px 0 0 0; width:100%; box-sizing:border-box; }
+.thumbnail-container img { flex:1; min-width:70px; aspect-ratio:1/1; object-fit:contain; cursor:pointer; opacity:0.7; transition:0.2s; margin:0; }
+.thumbnail-container img.active { opacity:1; }
+
+</style>
 </head>
 <body>
 
@@ -37,49 +39,264 @@
 
   <div class="content-col">
     <div class="gallery">
-      <div class="preview-container">
-        <span class="arrow arrow-left">&#10094;</span>
-        <img id="preview" src="cover1.png">
-        <span class="arrow arrow-right">&#10095;</span>
+      <div style="margin-bottom:10px; text-align:left"> <b> Music Artworks
+        <br> </b> Covers of various tracks </div>
+      <div class="preview-container" id="preview-container">
+        <img id="preview">
+        <div class="nav-left" id="prev"></div>
+        <div class="nav-right" id="next"></div>
       </div>
       <div class="thumbnail-container" id="thumbnails"></div>
     </div>
+
+    <div class="gallery" style="margin-top:40px;">
+      <div style="margin-bottom:10px; text-align:left"> <b> SVP URGENT </b>
+        <br> </b> A weekly series wtih friends where each created visual art based on the same word</div>
+
+
+      <div class="preview-container" id="preview-container2">
+        <img id="preview2">
+        <div class="nav-left" id="prev2"></div>
+        <div class="nav-right" id="next2"></div>
+      </div>
+      <div class="thumbnail-container" id="thumbnails2"></div>
+    </div>
+
+    <div class="gallery" style="margin-top:40px;">
+      <div style="margin-bottom:10px; text-align:left"> <b> Metal Birds </b></div>
+      <div class="preview-container" id="preview-container3">
+        <img id="preview3">
+        <div class="nav-left" id="prev3"></div>
+        <div class="nav-right" id="next3"></div>
+      </div>
+      <div class="thumbnail-container" id="thumbnails3"></div>
+    </div>
   </div>
+
+  <div class="spacer-col">
+    <div id="image-note" style="text-align:left; line-height:1.2; overflow-y:auto; margin-top:45px;"></div>
+  </div>
+
 </div>
+
 
 <script src="/menu.js"></script>
 <script>
-// Gallery images
-const images = ["cover1.png","cover2.png","cover3.png"];
+const images = [
+"covers/Visyura - Desolate (cover).png",
+"covers/Visyura - Anima Sola (cover).png",
+"covers/Visyura - EXPIATE (cover).png",
+"covers/Popbot, Juha, Visyura, jhl, Fehu., glyphli, Exorbiter, (un)familiar, lukasipo) - Rope (cover).png",
+"covers/Visyura - INNER FIELDS(cover).png",
+"covers/Visyura - AIMLESS (cover).png",
+"covers/Visyura - DISSOLVE (cover).png",
+"covers/Visyura - FRAGMENTS (cover).png",
+"covers/Visyura - ALLUVIUM (cover).png",
+"covers/Visyura - A Spurious Porspering (Concept).png",
+];
+
+const notes = [
+"Album cover for Desolate",
+"Album cover for Anima Sola",
+"Album cover for EXPIATE",
+"Compilation album cover featuring multiple artists",
+"Album cover for INNER FIELDS",
+"Album cover for AIMLESS",
+"Album cover for DISSOLVE",
+"Album cover for FRAGMENTS",
+"Album cover for ALLUVIUM",
+"Concept art for A Spurious Porspering",
+];
+
+const notes2 = [
+"SVP #6 - Bang",
+"SVP #4 - Contain",
+"SVP #3 - Bow",
+"SVP #1 - Absorb"
+];
+
+const notes3 = [
+"Metal Birds 2b",
+"Metal Birds 10",
+"Metal Birds 11",
+"Metal Birds 12",
+"Metal Birds 13",
+"Metal Birds 14",
+"Metal Birds 15",
+"Metal Birds 16",
+"Metal Birds 17",
+"Metal Birds 18",
+];
+
+const noteDisplay = document.getElementById("image-note");
 const preview = document.getElementById("preview");
 const thumbnails = document.getElementById("thumbnails");
+const navLeft = document.getElementById("prev");
+const navRight = document.getElementById("next");
+const previewContainer = document.getElementById("preview-container");
 let current = 0;
+let scale = 1;
 
-// Create thumbnails
-images.forEach((src,i)=>{
-  const img = document.createElement("img");
-  img.src = src;
-  if(i===0) {
-    img.classList.add("active");
-    preview.src = src;
-  }
-  img.onclick = () => showImage(i);
-  thumbnails.appendChild(img);
-});
+// preload images
+images.forEach(src => { const i = new Image(); i.src = src; });
 
 function showImage(i){
   current = i;
   preview.src = images[i];
   thumbnails.querySelectorAll("img").forEach(t=>t.classList.remove("active"));
   thumbnails.querySelectorAll("img")[i].classList.add("active");
+  noteDisplay.innerHTML = notes[i];
 }
 
-// Arrows navigation
-document.querySelector('.arrow-left').onclick = () => showImage((current-1+images.length)%images.length);
-document.querySelector('.arrow-right').onclick = () => showImage((current+1)%images.length);
+function updateLayout(){
+  const rect = preview.getBoundingClientRect();
+  navLeft.style.top = preview.offsetTop + "px";
+  navLeft.style.height = preview.offsetHeight + "px";
+  navLeft.style.width = preview.offsetWidth/2 + "px";
 
-// Click on preview -> next image
-preview.onclick = () => showImage((current+1)%images.length);
+  navRight.style.top = preview.offsetTop + "px";
+  navRight.style.height = preview.offsetHeight + "px";
+  navRight.style.width = preview.offsetWidth/2 + "px";
+
+  thumbnails.style.width = rect.width + "px";
+  noteDisplay.style.maxHeight = preview.offsetHeight + "px";
+}
+
+// thumbnails
+images.forEach((src,i)=>{
+  const img = document.createElement("img");
+  img.src = src;
+  img.addEventListener('click', ()=>showImage(i));
+  thumbnails.appendChild(img);
+});
+thumbnails.querySelectorAll("img")[0].classList.add("active");
+
+navLeft.addEventListener('click', ()=>showImage((current-1+images.length)%images.length));
+navRight.addEventListener('click', ()=>showImage((current+1)%images.length));
+
+preview.addEventListener('load', updateLayout);
+window.addEventListener('resize', updateLayout);
+
+// initial display without shiftinge
+preview.src = images[0];
+noteDisplay.innerHTML = notes[0];
+updateLayout();
+
+// Gallery 2: SVP URGENT
+const images2 = [
+"svp-urgent/vsy_svp6_bang.png",
+"svp-urgent/vsy_svp4_contain.png",
+"svp-urgent/vsy_svp3_bow.png",
+"svp-urgent/vsy_svp1_absorb.png"
+];
+
+const preview2 = document.getElementById("preview2");
+const thumbnails2 = document.getElementById("thumbnails2");
+const navLeft2 = document.getElementById("prev2");
+const navRight2 = document.getElementById("next2");
+let current2 = 0;
+
+images2.forEach(src => { const i = new Image(); i.src = src; });
+
+function showImage2(i){
+  current2 = i;
+  preview2.src = images2[i];
+  thumbnails2.querySelectorAll("img").forEach(t=>t.classList.remove("active"));
+  thumbnails2.querySelectorAll("img")[i].classList.add("active");
+  noteDisplay.innerHTML = notes2[i];
+}
+
+function updateLayout2(){
+  const rect = preview2.getBoundingClientRect();
+  navLeft2.style.top = preview2.offsetTop + "px";
+  navLeft2.style.height = preview2.offsetHeight + "px";
+  navLeft2.style.width = preview2.offsetWidth/2 + "px";
+
+  navRight2.style.top = preview2.offsetTop + "px";
+  navRight2.style.height = preview2.offsetHeight + "px";
+  navRight2.style.width = preview2.offsetWidth/2 + "px";
+
+  thumbnails2.style.width = rect.width + "px";
+  noteDisplay.style.maxHeight = preview2.offsetHeight + "px";
+}
+
+images2.forEach((src,i)=>{
+  const img = document.createElement("img");
+  img.src = src;
+  img.addEventListener('click', ()=>showImage2(i));
+  thumbnails2.appendChild(img);
+});
+thumbnails2.querySelectorAll("img")[0].classList.add("active");
+
+navLeft2.addEventListener('click', ()=>showImage2((current2-1+images2.length)%images2.length));
+navRight2.addEventListener('click', ()=>showImage2((current2+1)%images2.length));
+
+preview2.addEventListener('load', updateLayout2);
+window.addEventListener('resize', updateLayout2);
+
+preview2.src = images2[0];
+updateLayout2();
+
+// Gallery 3: Metal Birds
+const images3 = [
+"metal-birds/metal birds 2b.png",
+"metal-birds/metal birds 10.png",
+"metal-birds/metal birds 11.png",
+"metal-birds/metal birds 12.png",
+"metal-birds/metal birds 13.png",
+"metal-birds/metal birds 14.png",
+"metal-birds/metal birds 15.png",
+"metal-birds/metal birds 16.png",
+"metal-birds/metal birds 17.png",
+"metal-birds/metal birds 18.png",
+];
+
+const preview3 = document.getElementById("preview3");
+const thumbnails3 = document.getElementById("thumbnails3");
+const navLeft3 = document.getElementById("prev3");
+const navRight3 = document.getElementById("next3");
+let current3 = 0;
+
+images3.forEach(src => { const i = new Image(); i.src = src; });
+
+function showImage3(i){
+  current3 = i;
+  preview3.src = images3[i];
+  thumbnails3.querySelectorAll("img").forEach(t=>t.classList.remove("active"));
+  thumbnails3.querySelectorAll("img")[i].classList.add("active");
+  noteDisplay.innerHTML = notes3[i];
+}
+
+function updateLayout3(){
+  const rect = preview3.getBoundingClientRect();
+  navLeft3.style.top = preview3.offsetTop + "px";
+  navLeft3.style.height = preview3.offsetHeight + "px";
+  navLeft3.style.width = preview3.offsetWidth/2 + "px";
+
+  navRight3.style.top = preview3.offsetTop + "px";
+  navRight3.style.height = preview3.offsetHeight + "px";
+  navRight3.style.width = preview3.offsetWidth/2 + "px";
+
+  thumbnails3.style.width = rect.width + "px";
+  noteDisplay.style.maxHeight = preview3.offsetHeight + "px";
+}
+
+images3.forEach((src,i)=>{
+  const img = document.createElement("img");
+  img.src = src;
+  img.addEventListener('click', ()=>showImage3(i));
+  thumbnails3.appendChild(img);
+});
+thumbnails3.querySelectorAll("img")[0].classList.add("active");
+
+navLeft3.addEventListener('click', ()=>showImage3((current3-1+images3.length)%images3.length));
+navRight3.addEventListener('click', ()=>showImage3((current3+1)%images3.length));
+
+preview3.addEventListener('load', updateLayout3);
+window.addEventListener('resize', updateLayout3);
+
+preview3.src = images3[0];
+updateLayout3();
 </script>
 
 </body>

@@ -5,20 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>about - notna</title>
 <link rel="icon" href="/favicon.ico" type="image/x-icon">
+<link rel="stylesheet" href="/menu.css">
 <style>
   body { margin:0; font-family:Arial, sans-serif; }
-  .container { display:flex; max-width:70%; margin:3% auto 0 auto; align-items:flex-start; }
-  .menu-col { width:15%; padding:0 10px; box-sizing:border-box; }
-  .content-col { width:75%; padding:0 10px; box-sizing:border-box; }
-  .spacer-col { width:10%; padding:0 10px; box-sizing:border-box; }
-
-  .menu-item, .submenu a { font-size:18px; margin:5px 0; color:#000; text-decoration:none; display:block; cursor:pointer; text-transform: lowercase; }
-  .menu-item.active + .submenu { display:block; }
-  .submenu { display:none; margin-left:15px; }
-  .submenu a:hover { text-decoration:none; }
 
   .about-text { line-height:1.6; }
   .about-text p { margin:0; }
+  .spacer-col img { transition: filter 0.24s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
+  .spacer-col img:hover { filter: brightness(0) saturate(100%) invert(18%) sepia(100%) saturate(5000%) hue-rotate(350deg) brightness(98%) contrast(110%); }
 </style>
 </head>
 <body>
@@ -26,17 +20,26 @@
 <div class="container">
   <div id="menu-placeholder" class="menu-col"></div>
 
-  <div class="content-col">
+  <div class="content-col" style="width:45%;">
     <div class="about-text">
       <p><strong>about</strong></p>
       <p>like a boss</p>
       <br>
       <p><strong>links</strong></p>
       <p><a href="https://github.com/visyura" target="_blank">github</a></p>
+      <p><a href="https://music.youtube.com/playlist?list=PLs49HNk05S3ahCg_PdIan_ZdbHIoxgBkw" target="_blank">stuff i listen</a></p>
+
+
     </div>
   </div>
 
-  <div class="spacer-col"></div>
+
+
+
+  <div class="spacer-col" style="width:40%; margin-top:-30px;">
+    <img src="AN logo vite.png" alt="" style="width:80%; margin-bottom:20px;">
+    <img src="notna grid type.png" alt="" style="width:80%;">
+  </div>
 </div>
 
 <script src="/menu.js"></script>

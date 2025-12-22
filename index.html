@@ -2,20 +2,15 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>notna</title>
 <link rel="icon" href="favicon.ico" type="image/x-icon">
+<link rel="stylesheet" href="/menu.css">
 <style>
-  body { margin:0; font-family:Arial, sans-serif; }
-  .container { display:flex; max-width:70%; margin:3% auto 0 auto; align-items:flex-start; }
-  .menu-col { width:15%; padding:0 10px; box-sizing:border-box; }
-  .content-col { width:75%; padding:0 10px; box-sizing:border-box; }
-  .spacer-col { width:10%; padding:0 10px; box-sizing:border-box; }
+  body { margin:0; font-family:Arial, sans-serif; min-width:1200px; }
 
-  .menu-item, .submenu a { font-size:18px; margin:5px 0; color:#000; text-decoration:none; display:block; cursor:pointer; text-transform: lowercase; }
-  .menu-item.active + .submenu { display:block; }
-  .submenu { display:none; margin-left:15px; }
-  .submenu a:hover { text-decoration:none; }
+  @media screen and (max-width: 768px) {
+    body { min-width: 100%; }
+  }
 </style>
 </head>
 <body>

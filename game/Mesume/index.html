@@ -15,6 +15,13 @@
   .menu-item.active + .submenu { display:block; }
   .submenu { display:none; margin-left:15px; }
   .submenu a:hover { text-decoration:none; }
+
+  @media screen and (max-width: 768px) {
+    .container { max-width: 95%; margin: 2% auto 0 auto; }
+    .menu-col { width: 35%; }
+    .content-col { width: 65%; }
+    .menu-item, .submenu a { font-size: 14px; }
+  }
 </style>
 </head>
 <body>

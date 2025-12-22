@@ -5,17 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gallery Template</title>
 <link rel="icon" href="../../favicon.ico" type="image/x-icon">
+<link rel="stylesheet" href="/menu.css">
 <style>
 body { margin:0; font-family:Arial, sans-serif; }
-.container { display:flex; max-width:70%; margin:3% auto 0 auto; align-items:flex-start; justify-content:center; }
-.menu-col { width:15%; padding:0 10px; box-sizing:border-box; }
-.content-col { width:70%; padding:0 10px; box-sizing:border-box; display:flex; flex-direction:column; align-items:center; }
-.spacer-col { width:15%; padding:0 10px; box-sizing:border-box; }
-
-.menu-item, .submenu a { font-size:18px; margin:5px 0; color:#000; text-decoration:none; display:block; cursor:pointer; text-transform: lowercase; }
-.menu-item.active + .submenu { display:block; }
-.submenu { display:none; margin-left:15px; }
-.submenu a:hover { text-decoration:none; }
 
 .gallery { max-width:100%; margin:0; text-align:left; display:flex; flex-direction:column; }
 
@@ -26,8 +18,8 @@ body { margin:0; font-family:Arial, sans-serif; }
 .nav-left { left:0; }
 .nav-right { right:0; }
 
-.thumbnail-container { display:flex; flex-wrap:wrap; justify-content:space-between; gap:5px; margin:5px 0 0 0; width:100%; box-sizing:border-box; }
-.thumbnail-container img { flex:1; min-width:70px; aspect-ratio:1/1; object-fit:contain; cursor:pointer; opacity:0.7; transition:0.2s; margin:0; }
+.thumbnail-container { display:flex; flex-wrap:wrap; justify-content:flex-start; gap:5px; margin:5px 0 0 0; width:100%; box-sizing:border-box; transition: gap 0.3s ease, margin 0.3s ease; }
+.thumbnail-container img { flex:0 0 calc((100% - 45px) / 10); max-width:calc((100% - 45px) / 10); aspect-ratio:1/1; object-fit:contain; cursor:pointer; opacity:0.7; transition: opacity 0.2s, flex-basis 0.3s ease, max-width 0.3s ease; margin:0; }
 .thumbnail-container img.active { opacity:1; }
 
 #thumbnails2 { justify-content:flex-start; }
@@ -38,14 +30,20 @@ body { margin:0; font-family:Arial, sans-serif; }
 
 #preview-container3 { aspect-ratio:auto; height:auto; }
 
+@media screen and (max-width: 768px) {
+  .thumbnail-container { gap: 2px; margin: 2px 0 0 0; }
+  .thumbnail-container img { flex: 0 0 calc((100% - 18px) / 10); max-width: calc((100% - 18px) / 10); }
+  #thumbnails2 img { flex: 0 0 calc((100% - 18px) / 10); max-width: calc((100% - 18px) / 10); }
+  #thumbnails3 img { flex: 0 0 calc((100% - 18px) / 10); max-width: calc((100% - 18px) / 10); }
+}
+
 </style>
 </head>
 <body>
 
-<div id="menu-placeholder" style="position:fixed; left:15%; width:15%; padding:0 10px; box-sizing:border-box; max-height:0; overflow:visible;"></div>
-
 <div class="container">
-  <div class="menu-col"></div>
+  <div id="menu-placeholder" class="menu-col"></div>
+
   <div class="content-col">
     <div class="gallery">
       <div id="music-artworks-title" style="margin-bottom:10px; text-align:left"> <b> Music Artworks
@@ -336,22 +334,6 @@ preview3.src = images3[0];
 noteDisplay3.innerHTML = notes3[0];
 updateLayout3();
 
-// Align menu with first container
-function alignMenu(){
-  const firstContainer = document.querySelector('.container');
-  const menuPlaceholder = document.getElementById('menu-placeholder');
-  if(firstContainer && menuPlaceholder){
-    // Get the container's position from the top of the viewport
-    const containerRect = firstContainer.getBoundingClientRect();
-    // Set menu top to align with container top
-    menuPlaceholder.style.top = (window.scrollY + containerRect.top) + 'px';
-    // Set max-height to match container height
-    menuPlaceholder.style.maxHeight = containerRect.height + 'px';
-  }
-}
-
-window.addEventListener('load', alignMenu);
-window.addEventListener('resize', alignMenu);
 </script>
 
 </body>

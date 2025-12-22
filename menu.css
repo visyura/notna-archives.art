@@ -11,7 +11,7 @@
 .spacer-col img { transition: filter 0.24s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
 .spacer-col img:hover { filter: brightness(0) saturate(100%) invert(18%) sepia(100%) saturate(5000%) hue-rotate(350deg) brightness(98%) contrast(110%); }
 
-.menu-item, .submenu a { font-size:18px; margin:5px 0; color:#000; text-decoration:none; display:block; cursor:pointer; text-transform: lowercase; transition: font-size 0.3s ease; }
+.menu-item, .submenu a { font-size:18px; margin:2px 0; color:#000; text-decoration:none; display:block; cursor:pointer; text-transform: lowercase; transition: font-size 0.3s ease; }
 .menu-item.active + .submenu { display:block; }
 .submenu { display:none; margin-left:15px; }
 

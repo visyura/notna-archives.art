@@ -32,7 +32,7 @@ fetch('/menu.html')
   .then(r => r.text())
   .then(html => {
     sessionStorage.setItem('menuHTML', html);
-    if (!cachedMenu && placeholder) {
+    if (placeholder) {
       placeholder.innerHTML = html;
       initMenuAccordion();
     }

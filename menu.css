@@ -11,9 +11,10 @@
 .spacer-col img { transition: filter 0.24s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
 .spacer-col img:hover { filter: brightness(0) saturate(100%) invert(18%) sepia(100%) saturate(5000%) hue-rotate(350deg) brightness(98%) contrast(110%); }
 
-.menu-item, .submenu a { font-size:18px; margin:2px 0; color:#000; text-decoration:none; display:block; cursor:pointer; text-transform: lowercase; transition: font-size 0.3s ease; }
+.menu-item, .submenu a { font-size:18px; margin:2px 0; color:#000; text-decoration:none; display:block; cursor:pointer; text-transform: lowercase; transition: font-size 0.3s ease; width: fit-content; max-width: 100%; }
 .menu-item.active + .submenu { display:block; }
-.submenu { display:none; margin-left:15px; }
+.submenu { display:none; margin-left:15px; transition: opacity 0.15s ease; opacity: 0; }
+.menu-item.active + .submenu { opacity: 1; }
 
 @media screen and (max-width: 1280px) {
   .container { max-width: 85%; }

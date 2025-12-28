@@ -13,11 +13,13 @@ function initMenuAccordion() {
 
   menuItems.forEach((item, index) => {
     if (savedState[index]) item.classList.add('active');
-    item.onclick = () => {
+    item.onclick = (e) => {
       item.classList.toggle('active');
       const state = {};
       menuItems.forEach((itm, i) => state[i] = itm.classList.contains('active'));
-      sessionStorage.setItem('accordionState', JSON.stringify(state));
+      requestAnimationFrame(() => {
+        sessionStorage.setItem('accordionState', JSON.stringify(state));
+      });
     };
   });
 }

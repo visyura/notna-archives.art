@@ -22,137 +22,28 @@ body { margin:0; font-family:Arial, sans-serif; }
 .thumbnail-container img { flex:0 0 calc((100% - 45px) / 10); max-width:calc((100% - 45px) / 10); aspect-ratio:1/1; object-fit:contain; cursor:pointer; opacity:0.7; transition: opacity 0.2s, flex-basis 0.3s ease, max-width 0.3s ease; margin:0; }
 .thumbnail-container img.active { opacity:1; }
 
-#thumbnails { justify-content:flex-start; }
-#thumbnails img { flex:0 0 calc((100% - 45px) / 10); max-width:calc((100% - 45px) / 10); aspect-ratio:auto; }
+[id^="thumbnails"] { justify-content:flex-start; }
+[id^="thumbnails"] img { flex:0 0 calc((100% - 45px) / 10); max-width:calc((100% - 45px) / 10); aspect-ratio:auto; }
 
-#preview-container { height:auto; }
+[id^="preview-container"] { height:auto; }
 
 @media screen and (max-width: 768px) {
   .thumbnail-container { gap: 2px; margin: 2px 0 0 0; }
   .thumbnail-container img { flex: 0 0 calc((100% - 18px) / 10); max-width: calc((100% - 18px) / 10); }
-  #thumbnails img { flex: 0 0 calc((100% - 18px) / 10); max-width: calc((100% - 18px) / 10); }
+  [id^="thumbnails"] img { flex: 0 0 calc((100% - 18px) / 10); max-width: calc((100% - 18px) / 10); }
 }
 
 </style>
 </head>
 <body>
 
-<div class="container">
-  <div id="menu-placeholder" class="menu-col"></div>
-
-  <div class="content-col">
-    <div class="gallery">
-      <div style="margin-bottom:10px; text-align:left"> <b> Session test
-        <br> </b> Test to display pics! </div>
-      <div class="preview-container" id="preview-container">
-        <img id="preview">
-        <div class="nav-left" id="prev"></div>
-        <div class="nav-right" id="next"></div>
-      </div>
-      <div class="thumbnail-container" id="thumbnails"></div>
-    </div>
-  </div>
-  <div class="spacer-col">
-    <div id="image-note" style="text-align:left; line-height:1.2; overflow-y:auto;"></div>
-  </div>
-</div>
-
-
-<script src="/menu.js"></script>
+<script src="galleries-data.js"></script>
+<script src="/gallery-runtime.js?v=6"></script>
 <script>
-const images = [
-"abstract/DSC00389.JPG",
-"abstract/DSC00390.JPG",
-"abstract/DSC00391.JPG",
-"abstract/DSC00392.JPG",
-"abstract/DSC00396.JPG",
-"abstract/DSC00397.JPG",
-"abstract/DSC00398.JPG",
-"abstract/DSC00399.JPG",
-"abstract/DSC00400.JPG",
-"abstract/DSC00401.JPG",
-"abstract/DSC00402.JPG",
-"abstract/DSC00403.JPG",
-"abstract/DSC00404.JPG",
-"abstract/DSC00405.JPG",
-];
-
-const notes = [
-"DSC00389",
-"DSC00390",
-"DSC00391",
-"DSC00392",
-"DSC00396",
-"DSC00397",
-"DSC00398",
-"DSC00399",
-"DSC00400",
-"DSC00401",
-"DSC00402",
-"DSC00403",
-"DSC00404",
-"DSC00405",
-];
-
-const noteDisplay = document.getElementById("image-note");
-const preview = document.getElementById("preview");
-const thumbnails = document.getElementById("thumbnails");
-const navLeft = document.getElementById("prev");
-const navRight = document.getElementById("next");
-const previewContainer = document.getElementById("preview-container");
-let current = 0;
-let scale = 1;
-
-// preload images
-images.forEach(src => { const i = new Image(); i.src = src; });
-
-function showImage(i){
-  current = i;
-  preview.src = images[i];
-  thumbnails.querySelectorAll("img").forEach(t=>t.classList.remove("active"));
-  thumbnails.querySelectorAll("img")[i].classList.add("active");
-  noteDisplay.innerHTML = notes[i];
-}
-
-function updateLayout(){
-  const rect = preview.getBoundingClientRect();
-  navLeft.style.top = preview.offsetTop + "px";
-  navLeft.style.height = preview.offsetHeight + "px";
-  navLeft.style.width = preview.offsetWidth/2 + "px";
-
-  navRight.style.top = preview.offsetTop + "px";
-  navRight.style.height = preview.offsetHeight + "px";
-  navRight.style.width = preview.offsetWidth/2 + "px";
-
-  thumbnails.style.width = rect.width + "px";
-
-  const previewContainer = document.getElementById('preview-container');
-  const gallery = previewContainer.parentElement;
-  noteDisplay.style.marginTop = (previewContainer.offsetTop - gallery.offsetTop) + "px";
-  noteDisplay.style.height = previewContainer.offsetHeight + "px";
-}
-
-// thumbnails
-images.forEach((src,i)=>{
-  const img = document.createElement("img");
-  img.src = src;
-  img.addEventListener('click', ()=>showImage(i));
-  thumbnails.appendChild(img);
-});
-thumbnails.querySelectorAll("img")[0].classList.add("active");
-
-navLeft.addEventListener('click', ()=>showImage((current-1+images.length)%images.length));
-navRight.addEventListener('click', ()=>showImage((current+1)%images.length));
-
-preview.addEventListener('load', updateLayout);
-window.addEventListener('resize', updateLayout);
-
-// initial display without shiftinge
-preview.src = images[0];
-noteDisplay.innerHTML = notes[0];
-updateLayout();
-
+// Generate all galleries from data
+generateGalleries(photographyGalleries);
 </script>
+<script src="/menu.js"></script>
 
 </body>
 </html>

@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(move:*)",
+      "Bash(node gallery-generator.js:*)",
+      "Bash(echo:*)",
+      "Bash(ls:*)",
+      "Bash(node -e:*)",
+      "Bash(node update-galleries.js:*)",
+      "Bash(node build/update-galleries.js:*)"
+    ]
+  }
+}

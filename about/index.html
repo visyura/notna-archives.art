@@ -13,6 +13,22 @@
   .about-text p { margin:0; }
   .spacer-col img { transition: filter 0.24s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
   .spacer-col img:hover { filter: brightness(0) saturate(100%) invert(18%) sepia(100%) saturate(5000%) hue-rotate(350deg) brightness(98%) contrast(110%); }
+
+  .draggable-gif {
+    position: fixed;
+    user-select: none;
+    z-index: 1;
+    pointer-events: auto;
+    cursor: move;
+  }
+  .draggable-gif:active {
+    cursor: grabbing;
+  }
+
+  .about-text {
+    position: relative;
+    z-index: 10;
+  }
 </style>
 </head>
 <body>
@@ -31,7 +47,7 @@
 
 
     </div>
-    <img src="staricon.gif" alt="" style="width:100px; margin-top:20px; pointer-events:none;">
+    <img id="draggable-gif" class="draggable-gif" src="staricon.gif" alt="" style="width:50%; left:46px; top:-41px;">
   </div>
 
 
@@ -44,6 +60,38 @@
 </div>
 
 <script src="/menu.js"></script>
+
+<script>
+const gif = document.getElementById('draggable-gif');
+let isDragging = false;
+let offsetX, offsetY;
+
+gif.addEventListener('mousedown', (e) => {
+  isDragging = true;
+  const rect = gif.getBoundingClientRect();
+  offsetX = e.clientX - rect.left;
+  offsetY = e.clientY - rect.top;
+});
+
+document.addEventListener('mousemove', (e) => {
+  if (isDragging) {
+    gif.style.left = (e.clientX - offsetX) + 'px';
+    gif.style.top = (e.clientY - offsetY) + 'px';
+  }
+});
+
+document.addEventListener('mouseup', () => {
+  if (isDragging) {
+    isDragging = false;
+    const position = {
+      left: gif.style.left,
+      top: gif.style.top
+    };
+    console.log('GIF position saved:', position);
+  }
+});
+</script>
+
 
 </body>
 </html>

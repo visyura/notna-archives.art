@@ -7,6 +7,7 @@ const graphicDesignGalleries = [
     id: "covers",
     title: "Music Artworks",
     description: "Covers of various tracks",
+    aspectRatio: "1/1",
     images: [
       "covers/Visyura - Desolate (cover).png",
       "covers/Visyura - Anima Sola (cover).png",
@@ -36,6 +37,7 @@ const graphicDesignGalleries = [
     id: "svp-urgent",
     title: "SVP URGENT",
     description: "A weekly series with friends where each created visual art based on the same word",
+    aspectRatio: "1/1",
     images: [
       "svp-urgent/vsy_svp6_bang.png",
       "svp-urgent/vsy_svp4_contain.png",
@@ -53,6 +55,7 @@ const graphicDesignGalleries = [
     id: "metal-birds",
     title: "Metal Birds",
     description: "Metalheart inspired thingy i made for postcard christmas gifts on a whim",
+    aspectRatio: "auto",
     images: [
       "metal-birds/metal birds 2b.png",
       "metal-birds/metal birds 10.png",

@@ -2,18 +2,31 @@
 
 /**
  * Standalone Image Rotation Tool
- * Rotates images in a folder to match the majority orientation
+ * Rotates images in a folder to match desired orientation
  *
  * Usage:
- *   node rotate-images.js <folder-path>
- *   Example: node rotate-images.js photography/winter-cloak
+ *   node rotate-images.js <folder-path> [horizontal|vertical]
+ *   Example: node rotate-images.js photography/winter-cloak horizontal
+ *   If orientation not specified, will detect majority and ask for confirmation
  */
 
 const fs = require('fs');
 const path = require('path');
+const readline = require('readline');
 
 // Change to project root directory
 process.chdir(path.join(__dirname, '..'));
+
+// Create readline interface for user input
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+// Promisify question
+function question(query) {
+  return new Promise(resolve => rl.question(query, resolve));
+}
 
 const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.JPG', '.JPEG', '.PNG', '.GIF', '.WEBP'];
 
@@ -128,26 +141,48 @@ async function rotateImages(folderPath) {
     process.exit(0);
   }
 
-  const majorityIsPortrait = portraitCount > landscapeCount;
-  const majorityOrientation = majorityIsPortrait ? 'portrait' : 'landscape';
-  const minorityImages = majorityIsPortrait
+  console.log(`   Portrait: ${portraitCount}, Landscape: ${landscapeCount}`);
+
+  // Check for command line orientation argument
+  const orientationArg = process.argv[3];
+  let targetOrientation;
+
+  if (orientationArg === 'horizontal' || orientationArg === 'landscape') {
+    targetOrientation = 'landscape';
+  } else if (orientationArg === 'vertical' || orientationArg === 'portrait') {
+    targetOrientation = 'portrait';
+  } else {
+    // Ask user to choose
+    console.log('\nWhich orientation do you want for all images?');
+    const choice = await question('Enter "h" for HORIZONTAL or "v" for VERTICAL: ');
+
+    if (choice.toLowerCase() === 'h' || choice.toLowerCase() === 'horizontal') {
+      targetOrientation = 'landscape';
+    } else if (choice.toLowerCase() === 'v' || choice.toLowerCase() === 'vertical') {
+      targetOrientation = 'portrait';
+    } else {
+      console.log('\n❌ Invalid choice. Cancelled.\n');
+      rl.close();
+      process.exit(1);
+    }
+  }
+
+  const imagesToRotate = targetOrientation === 'portrait'
     ? imageData.filter(img => img.isLandscape)
     : imageData.filter(img => img.isPortrait);
 
-  console.log(`   Portrait: ${portraitCount}, Landscape: ${landscapeCount}`);
-  console.log(`   Majority: ${majorityOrientation.toUpperCase()}`);
-
-  if (minorityImages.length === 0) {
-    console.log('\n✓ All images already match majority orientation.\n');
+  if (imagesToRotate.length === 0) {
+    console.log(`\n✓ All images are already ${targetOrientation.toUpperCase()}.\n`);
+    rl.close();
     process.exit(0);
   }
 
-  console.log(`\n🔄 Rotating ${minorityImages.length} image(s) to match majority...\n`);
+  console.log(`\n🔄 Rotating ${imagesToRotate.length} image(s) to ${targetOrientation.toUpperCase()}...\n`);
 
   let successCount = 0;
-  for (const img of minorityImages) {
-    // Rotate 90 degrees clockwise if majority is portrait, counter-clockwise if landscape
-    const degrees = majorityIsPortrait ? 90 : -90;
+  for (const img of imagesToRotate) {
+    // Rotate 90 degrees clockwise if target is portrait, counter-clockwise if landscape
+    const degrees = targetOrientation === 'portrait' ? 90 : -90;
     console.log(`   Rotating: ${img.file}`);
     const success = await rotateImage(img.path, degrees);
     if (success) {
@@ -155,8 +190,9 @@ async function rotateImages(folderPath) {
     }
   }
 
-  console.log(`\n✅ Rotated ${successCount} of ${minorityImages.length} images.`);
+  console.log(`\n✅ Rotated ${successCount} of ${imagesToRotate.length} images.`);
   console.log('🌐 Refresh your browser to see the updated images!\n');
+  rl.close();
 }
 
 // Check for command line argument

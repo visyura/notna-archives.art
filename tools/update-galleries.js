@@ -24,8 +24,9 @@ const galleryConfigs = [
     variableName: 'photographyGalleries',
     // Define gallery metadata - only folder name, title, description needed
     galleries: [
-      { folder: 'winter-cloak', title: 'winter cloak under the sun', description: "we ain't got snow, but we got glitters" },
-      { folder: 'test-session', title: 'test session', description: "just there but it's fun" }
+            { folder: 'winter-cloak', title: 'winter cloak under the sun', description: "we ain't got snow, but we got glitters", aspectRatio: 'auto' },
+            { folder: 'glass-full-of-flies', title: 'glass full of flies', description: "Description here", aspectRatio: 'auto' },
+            { folder: 'test-session', title: 'test session', description: "just there but it's fun", aspectRatio: 'auto' }
     ]
   },
   {
@@ -37,6 +38,7 @@ const galleryConfigs = [
         folder: 'covers',
         title: 'Music Artworks',
         description: 'Covers of various tracks',
+        aspectRatio: '1/1',
         customOrder: [
           'Visyura - Desolate (cover).png',
           'Visyura - Anima Sola (cover).png',
@@ -66,6 +68,7 @@ const galleryConfigs = [
         folder: 'svp-urgent',
         title: 'SVP URGENT',
         description: 'A weekly series with friends where each created visual art based on the same word',
+        aspectRatio: '1/1',
         customOrder: [
           'vsy_svp6_bang.png',
           'vsy_svp4_contain.png',
@@ -83,6 +86,7 @@ const galleryConfigs = [
         folder: 'metal-birds',
         title: 'Metal Birds',
         description: 'Metalheart inspired thingy i made for postcard christmas gifts on a whim',
+        aspectRatio: 'auto',
         customOrder: [
           'metal birds 2b.png',
           'metal birds 10.png',
@@ -179,6 +183,7 @@ function updateGalleriesDataFile(config) {
       id: gallery.folder.toLowerCase().replace(/\s+/g, '-'),
       title: gallery.title,
       description: gallery.description,
+      aspectRatio: gallery.aspectRatio || 'auto',
       images: orderedImages,
       notes: notes,
       imageCount: imageFiles.length
@@ -197,6 +202,7 @@ ${galleriesData.map(gallery => `  {
     id: "${gallery.id}",
     title: "${gallery.title}",
     description: "${gallery.description}",
+    aspectRatio: "${gallery.aspectRatio}",
     images: [
 ${gallery.images.map(img => `      "${img}",`).join('\n')}
     ],

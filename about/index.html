@@ -29,6 +29,54 @@
     position: relative;
     z-index: 10;
   }
+
+  .star {
+    position: fixed;
+    pointer-events: auto;
+    cursor: grab;
+    z-index: 5;
+    user-select: none;
+  }
+  .star:active {
+    cursor: grabbing;
+  }
+
+  .star-text {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    color: #000;
+    white-space: nowrap;
+    pointer-events: auto;
+    cursor: text;
+    padding: 2px 4px;
+    border: 1px solid transparent;
+    background: transparent;
+    border-radius: 3px;
+    text-align: center;
+  }
+  .star-text:hover {
+    border-color: #ccc;
+  }
+  .star-text:focus {
+    outline: none;
+    border-color: #666;
+    background: transparent;
+  }
+
+  .star-container {
+    position: fixed;
+    pointer-events: none;
+    width: 100px;
+    height: 100px;
+  }
+  .star-container img {
+    pointer-events: auto;
+    display: block;
+    position: relative;
+  }
 </style>
 </head>
 <body>
@@ -47,7 +95,6 @@
 
 
     </div>
-    <img id="draggable-gif" class="draggable-gif" src="staricon.gif" alt="" style="width:50%; left:46px; top:-41px;">
   </div>
 
 
@@ -62,34 +109,622 @@
 <script src="/menu.js"></script>
 
 <script>
-const gif = document.getElementById('draggable-gif');
-let isDragging = false;
-let offsetX, offsetY;
+// Star physics system
+const stars = [];
+const numStars = 20;
+const gravity = 0.12;
+const friction = 0.975; // Lower friction to allow spirals to build speed
+const minOrbitRadius = 200;
+const chaosFactor = 0.04;
+const starSize = 80;
 
-gif.addEventListener('mousedown', (e) => {
-  isDragging = true;
-  const rect = gif.getBoundingClientRect();
-  offsetX = e.clientX - rect.left;
-  offsetY = e.clientY - rect.top;
-});
+// WebSocket connection for real-time updates
+let ws;
+function connectWebSocket() {
+  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  ws = new WebSocket(`${protocol}//${window.location.host}`);
+
+  ws.onopen = () => {
+    console.log('WebSocket connected');
+  };
+
+  ws.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    if (data.type === 'star-update') {
+      // Find and update the star
+      const star = stars.find(s => s.id === data.id);
+      if (star) {
+        star.text = data.text;
+        star.x = data.x;
+        star.y = data.y;
+        star.textElement.textContent = data.text;
+      }
+    }
+  };
+
+  ws.onclose = () => {
+    console.log('WebSocket disconnected, reconnecting...');
+    setTimeout(connectWebSocket, 1000);
+  };
+
+  ws.onerror = (error) => {
+    console.error('WebSocket error:', error);
+  };
+}
+
+connectWebSocket();
+
+class Star {
+  constructor(id, text = '') {
+    this.id = id;
+    this.text = text;
+
+    // Create container for star and text
+    this.container = document.createElement('div');
+    this.container.className = 'star-container';
+
+    // Create img element with cache-busting for animation desync
+    this.element = document.createElement('img');
+    this.element.className = 'star';
+    this.element.width = starSize;
+    this.element.height = starSize;
+
+    // Create editable text element
+    this.textElement = document.createElement('div');
+    this.textElement.className = 'star-text';
+    this.textElement.contentEditable = true;
+    this.textElement.textContent = this.text;
+
+    this.container.appendChild(this.element);
+    this.container.appendChild(this.textElement);
+
+    this.x = Math.random() * window.innerWidth;
+    this.y = Math.random() * window.innerHeight;
+    this.vx = (Math.random() - 0.5) * 1.5;
+    this.vy = (Math.random() - 0.5) * 1.5;
+    this.rotation = Math.random() * 360;
+    this.rotationSpeed = (Math.random() - 0.5) * 1.5;
+    this.rotationMultiplier = 0.3 + Math.random() * 0.7; // Each star rotates at different rate (0.3x to 1.0x - slower)
+
+    // For exploratory wandering motion
+    this.wanderAngle = Math.random() * Math.PI * 2; // Current direction of exploration
+    this.wanderChangeRate = 0.05 + Math.random() * 0.1; // How often they change direction
+    this.spiralAvoidanceTimer = 0; // Tracks how long since last near a spiral - starts avoiding, then embraces
+
+    // Random spiral direction (clockwise or counter-clockwise)
+    this.spiralDirection = Math.random() > 0.5 ? 1 : -1; // 1 = clockwise, -1 = counter-clockwise
+
+    // Dynamic speed multiplier - each star has different base speed (0.6x to 1.4x)
+    this.speedMultiplier = 0.6 + Math.random() * 0.8;
+
+    // Speed variation timer for pulsing movement
+    this.speedVariationPhase = Math.random() * Math.PI * 2; // Random starting phase
+    this.speedVariationRate = 0.01 + Math.random() * 0.02; // How fast speed oscillates
+    this.isDragging = false;
+    this.dragStartX = 0;
+    this.dragStartY = 0;
+    this.dragStartTime = 0;
+    this.holdDuration = 0;
+    this.recoveryFriction = 1.0;
+    this.radius = starSize / 2;
+    this.pixelData = null;
+
+    // Random chaos parameters
+    this.chaosAngle = Math.random() * Math.PI * 2;
+    this.chaosSpeed = 0.01 + Math.random() * 0.02;
+
+    // Random collision group (0 or 1) - stars only collide with same group
+    this.collisionGroup = Math.random() > 0.5 ? 1 : 0;
+
+    // Collision cooldown tracking
+    this.collisionCooldowns = new Map(); // Maps other star -> cooldown end time
+
+    // Spiral momentum persistence
+    this.spiralMomentum = 0; // Tracks how much spiral force is being applied
+    this.spiralDecay = 0.985; // Slower decay to maintain orbital energy longer
+    this.minSpiralDuration = 120; // Minimum frames to maintain spiral (about 2 seconds at 60fps)
+    this.angularVelocity = 0; // Track rotational velocity around partners
+
+    // Target seeking
+    this.targetStar = null; // The star this one is moving toward
+    this.retargetTimer = 0; // When to pick a new target
+
+    // Spiral pairing - now supports multiple partners
+    this.spiralPartners = []; // Array of stars this one is currently spiraling with
+    this.spiralLockTimer = 0; // How long they've been locked in spiral
+
+    this.container.style.left = this.x + 'px';
+    this.container.style.top = this.y + 'px';
+    this.element.style.transform = `rotate(${this.rotation}deg)`;
+
+    // Load image immediately with cache-busting for desync
+    this.element.src = 'notnastar.png?r=' + Math.random();
+
+    document.body.appendChild(this.container);
+
+    this.element.addEventListener('mousedown', (e) => {
+      this.isDragging = true;
+      this.dragStartX = e.clientX - this.x;
+      this.dragStartY = e.clientY - this.y;
+      this.dragStartTime = Date.now();
+      this.vx = 0;
+      this.vy = 0;
+      e.preventDefault();
+    });
+
+    // Mouse wheel rotation - on container to catch all wheel events
+    // Track target rotation for smooth animation
+    this.targetRotation = this.rotation;
+
+    this.container.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      // Adjust target rotation based on wheel delta (reduced sensitivity)
+      this.targetRotation += e.deltaY * 0.1;
+    }, { passive: false });
+
+    // Save text when editing finishes
+    this.textElement.addEventListener('blur', () => {
+      this.text = this.textElement.textContent;
+      this.saveToServer();
+    });
+
+    // Prevent dragging when editing text
+    this.textElement.addEventListener('mousedown', (e) => {
+      e.stopPropagation();
+    });
+  }
+
+  async saveToServer() {
+    try {
+      const starData = {
+        id: this.id,
+        x: this.x,
+        y: this.y,
+        text: this.text
+      };
+
+      // Save to server
+      const response = await fetch('/api/save-star', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(starData)
+      });
+
+      if (!response.ok) {
+        console.error('Failed to save star data');
+        return;
+      }
+
+      // Broadcast update to all clients via WebSocket
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+          type: 'star-update',
+          ...starData
+        }));
+      }
+    } catch (error) {
+      console.error('Error saving star:', error);
+    }
+  }
+
+  update() {
+    if (!this.isDragging) {
+      // Update speed variation for dynamic pulsing movement
+      this.speedVariationPhase += this.speedVariationRate;
+      // Creates oscillation between 0.8x and 1.2x speed
+      const speedPulse = 1.0 + Math.sin(this.speedVariationPhase) * 0.2;
+      // Combine base speed multiplier with pulsing variation
+      const currentSpeedMult = this.speedMultiplier * speedPulse;
+
+      // PAIRING: Find nearby stars to join spiral group (max 3 stars per group, prefer pairs)
+      stars.forEach(other => {
+        if (other === this) return; // Skip self
+
+        const dx = other.x - this.x;
+        const dy = other.y - this.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        const currentGroupSize = this.spiralPartners.length + 1;
+        const otherGroupSize = other.spiralPartners.length + 1;
+
+        // Pairing rules:
+        // - Pairs (2 stars) are common: always allow within 150px
+        // - Groups of 3: only 30% chance to form, smaller radius (100px)
+        // - Groups of 4+: not allowed
+        let canPair = false;
+
+        if (this.spiralPartners.length === 0 && other.spiralPartners.length === 0) {
+          // Both unpaired: easy to form pairs
+          canPair = distance < 150;
+        } else if (currentGroupSize < 3 && otherGroupSize === 1 && !this.spiralPartners.includes(other)) {
+          // Adding a third star: rare, smaller radius, random chance
+          canPair = distance < 100 && Math.random() < 0.3;
+        }
+
+        if (canPair && !this.spiralPartners.includes(other)) {
+          // Join spiral group
+          this.spiralPartners.push(other);
+          other.spiralPartners.push(this);
+          this.spiralLockTimer = 0;
+          other.spiralLockTimer = 0;
+
+          // Make both stars orbit in the same direction
+          if (this.spiralPartners.length === 1) {
+            // First pairing: sync spiral directions
+            other.spiralDirection = this.spiralDirection;
+          }
+        }
+      });
+
+      // UNPAIRED: Slow exploratory wandering motion with spiral avoidance/attraction
+      if (this.spiralPartners.length === 0) {
+        this.spiralAvoidanceTimer++;
+
+        // Find nearby spiral groups
+        let nearestSpiralDistance = Infinity;
+        let nearestSpiralX = 0;
+        let nearestSpiralY = 0;
+
+        stars.forEach(other => {
+          if (other === this || other.spiralPartners.length === 0) return;
+
+          const dx = other.x - this.x;
+          const dy = other.y - this.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance < nearestSpiralDistance && distance < 250) {
+            nearestSpiralDistance = distance;
+            nearestSpiralX = other.x;
+            nearestSpiralY = other.y;
+          }
+        });
+
+        // If near a spiral group
+        if (nearestSpiralDistance < 250) {
+          const dx = nearestSpiralX - this.x;
+          const dy = nearestSpiralY - this.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist > 0) {
+            // Initially keep distance (first 3 seconds), then embrace (after 3 seconds)
+            const avoidancePhase = this.spiralAvoidanceTimer < 180; // 3 seconds at 60fps
+
+            if (avoidancePhase) {
+              // KEEP DISTANCE: Orbit around spiral instead of fleeing
+              // Apply perpendicular force to circle around the spiral
+              const perpX = -dy / dist;
+              const perpY = dx / dist;
+
+              const orbitForce = 0.02 * currentSpeedMult;
+              this.vx += perpX * orbitForce;
+              this.vy += perpY * orbitForce;
+
+              // Very gentle outward force to maintain distance (not flee)
+              const distanceKeepForce = 0.01 * currentSpeedMult;
+              this.vx -= (dx / dist) * distanceKeepForce;
+              this.vy -= (dy / dist) * distanceKeepForce;
+            } else {
+              // EMBRACE: Move toward spiral (but very gently)
+              const attractForce = 0.01 * currentSpeedMult;
+              this.vx += (dx / dist) * attractForce;
+              this.vy += (dy / dist) * attractForce;
+            }
+          }
+
+          // Reset timer when near spirals
+          if (this.spiralAvoidanceTimer > 360) {
+            this.spiralAvoidanceTimer = 0; // Cycle between avoid and embrace
+          }
+        }
+
+        // Gradually change wander direction for smooth exploration
+        this.wanderAngle += (Math.random() - 0.5) * this.wanderChangeRate;
+
+        // Apply gentle force in the current wander direction
+        const wanderForce = 0.04 * currentSpeedMult;
+        this.vx += Math.cos(this.wanderAngle) * wanderForce;
+        this.vy += Math.sin(this.wanderAngle) * wanderForce;
+
+        // Add random exploration
+        this.vx += (Math.random() - 0.5) * 0.03 * currentSpeedMult;
+        this.vy += (Math.random() - 0.5) * 0.03 * currentSpeedMult;
+      }
+
+      // SPIRAL: If in a group, apply orbital motion around group center
+      if (this.spiralPartners.length > 0) {
+        this.spiralLockTimer++;
+
+        // Calculate group size for stability
+        const groupSize = this.spiralPartners.length + 1;
+
+        // Group durations: pairs break regularly, groups of 3 break very quickly
+        let baseBreakTime, randomBreakChance;
+
+        if (groupSize === 2) {
+          // Pairs: shorter duration, higher break chance
+          baseBreakTime = 180; // 3 seconds (reduced from 5)
+          randomBreakChance = 0.02; // 2% per frame (4x higher)
+        } else {
+          // Groups of 3: very unstable, break very quickly
+          baseBreakTime = 60; // 1 second only
+          randomBreakChance = 0.08; // 8% per frame - breaks very fast!
+        }
+
+        const shouldRandomBreak = Math.random() < randomBreakChance;
+
+        // Break pairing after time or random break
+        if (this.spiralLockTimer > baseBreakTime || shouldRandomBreak) {
+          // Remove all partnerships
+          this.spiralPartners.forEach(partner => {
+            const idx = partner.spiralPartners.indexOf(this);
+            if (idx !== -1) {
+              partner.spiralPartners.splice(idx, 1);
+            }
+          });
+          this.spiralPartners = [];
+          this.spiralLockTimer = 0;
+        } else {
+          // Calculate center of mass for the entire spiral group
+          let centerX = this.x;
+          let centerY = this.y;
+
+          this.spiralPartners.forEach(partner => {
+            centerX += partner.x;
+            centerY += partner.y;
+          });
+
+          centerX /= groupSize;
+          centerY /= groupSize;
+
+          // Vector from this star to group center
+          const toCenterX = centerX - this.x;
+          const toCenterY = centerY - this.y;
+          const distToCenter = Math.sqrt(toCenterX * toCenterX + toCenterY * toCenterY);
+
+          if (distToCenter > 0) {
+            // Perpendicular to radius (tangential force) - direction varies per star
+            const perpX = -toCenterY / distToCenter * this.spiralDirection;
+            const perpY = toCenterX / distToCenter * this.spiralDirection;
+
+            // Smaller tangential force for tighter, slower orbits
+            const tangentialForce = 0.03;
+            this.vx += perpX * tangentialForce;
+            this.vy += perpY * tangentialForce;
+
+            // Smaller centripetal force - gentler pull
+            const centripetalForce = 0.06;
+            this.vx += (toCenterX / distToCenter) * centripetalForce;
+            this.vy += (toCenterY / distToCenter) * centripetalForce;
+
+            // Gentle outward push to prevent collapse (smaller threshold)
+            if (distToCenter < 40) {
+              const pushForce = 0.05;
+              this.vx -= (toCenterX / distToCenter) * pushForce;
+              this.vy -= (toCenterY / distToCenter) * pushForce;
+            }
+
+            // More individual wandering while paired for irregular orbits
+            this.vx += (Math.random() - 0.5) * 0.04;
+            this.vy += (Math.random() - 0.5) * 0.04;
+          }
+        }
+      }
+
+      // Apply friction
+      this.vx *= 0.98;
+      this.vy *= 0.98;
+
+      // Update position
+      this.x += this.vx;
+      this.y += this.vy;
+
+      // Rotate stars based on their velocity (movement creates rotation)
+      const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+
+      // Variable rotation: each star rotates differently based on its multiplier
+      // Reduced max speed, gentler rotation
+      const baseRotation = this.rotationMultiplier * 0.2;
+      this.targetRotation += (speed * 1.0 * this.rotationMultiplier) + baseRotation;
+
+      // Keep in screen bounds with larger margin and gentler push away from edges
+      const margin = 150;
+      const edgePushStrength = 0.08;
+
+      if (this.x < margin) {
+        const pushAmount = (margin - this.x) / margin;
+        this.vx += edgePushStrength * pushAmount;
+      }
+      if (this.x > window.innerWidth - margin) {
+        const pushAmount = (this.x - (window.innerWidth - margin)) / margin;
+        this.vx -= edgePushStrength * pushAmount;
+      }
+      if (this.y < margin) {
+        const pushAmount = (margin - this.y) / margin;
+        this.vy += edgePushStrength * pushAmount;
+      }
+      if (this.y > window.innerHeight - margin) {
+        const pushAmount = (this.y - (window.innerHeight - margin)) / margin;
+        this.vy -= edgePushStrength * pushAmount;
+      }
+    }
+
+    // Smoothly interpolate rotation toward target rotation (for mouse wheel)
+    const rotationDiff = this.targetRotation - this.rotation;
+    this.rotation += rotationDiff * 0.1; // Smooth interpolation
+
+    this.container.style.left = this.x + 'px';
+    this.container.style.top = this.y + 'px';
+    this.element.style.transform = `rotate(${this.rotation}deg)`;
+  }
+
+  checkCollision(other) {
+    if (this === other) return;
+
+    // Only collide with stars in the same collision group
+    if (this.collisionGroup !== other.collisionGroup) return;
+
+    // Check collision cooldown
+    const now = Date.now();
+    const cooldownTime = 2500; // 2.5 seconds cooldown
+
+    if (this.collisionCooldowns.has(other)) {
+      if (now < this.collisionCooldowns.get(other)) {
+        return; // Still on cooldown, skip collision
+      }
+    }
+
+    // Calculate distance between star centers
+    const dx = other.x - this.x;
+    const dy = other.y - this.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    // Use approximate circular collision (much faster)
+    const collisionRadius = starSize * 0.35; // Approximate star shape
+    const minDistance = collisionRadius * 2;
+
+    // Check if stars are colliding
+    if (distance < minDistance && distance > 0) {
+      // Set cooldown for both stars
+      this.collisionCooldowns.set(other, now + cooldownTime);
+      other.collisionCooldowns.set(this, now + cooldownTime);
+
+      // Calculate collision angle
+      const angle = Math.atan2(dy, dx);
+
+      // Separate the stars
+      const overlap = minDistance - distance;
+      const separateX = Math.cos(angle) * overlap * 0.5;
+      const separateY = Math.sin(angle) * overlap * 0.5;
+
+      this.x -= separateX;
+      this.y -= separateY;
+      other.x += separateX;
+      other.y += separateY;
+
+      // Calculate relative velocity
+      const dvx = other.vx - this.vx;
+      const dvy = other.vy - this.vy;
+
+      // Calculate relative velocity in collision normal direction
+      const dvn = dvx * Math.cos(angle) + dvy * Math.sin(angle);
+
+      // Only apply impulse if objects are moving towards each other
+      if (dvn < 0) {
+        // Both stars go in the SAME random direction!
+        const sharedDirection = Math.random() * Math.PI * 2;
+        const sharedMagnitude = 2.0 + Math.random() * 3.0; // 2.0 to 5.0
+
+        // Apply same direction boost to both stars
+        const sharedVx = Math.cos(sharedDirection) * sharedMagnitude;
+        const sharedVy = Math.sin(sharedDirection) * sharedMagnitude;
+
+        this.vx += sharedVx;
+        this.vy += sharedVy;
+        other.vx += sharedVx;
+        other.vy += sharedVy;
+
+        // Add centripetal boost with random strength - push TOWARD center
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+
+        const thisDx = this.x - centerX;
+        const thisDy = this.y - centerY;
+        const thisDist = Math.sqrt(thisDx * thisDx + thisDy * thisDy);
+        const centripetalBoost = 0.5 + Math.random() * 1.5; // 0.5 to 2.0
+        this.vx -= (thisDx / thisDist) * centripetalBoost;
+        this.vy -= (thisDy / thisDist) * centripetalBoost;
+
+        const otherDx = other.x - centerX;
+        const otherDy = other.y - centerY;
+        const otherDist = Math.sqrt(otherDx * otherDx + otherDy * otherDy);
+        const otherCentripetalBoost = 0.5 + Math.random() * 1.5;
+        other.vx -= (otherDx / otherDist) * otherCentripetalBoost;
+        other.vy -= (otherDy / otherDist) * otherCentripetalBoost;
+      }
+    }
+  }
+}
+
+// Load stars from server or create new ones
+async function loadStars() {
+  try {
+    const response = await fetch('/api/load-stars');
+    if (response.ok) {
+      const data = await response.json();
+      if (data.stars && data.stars.length > 0) {
+        data.stars.forEach(starData => {
+          const star = new Star(starData.id, starData.text);
+          star.x = starData.x;
+          star.y = starData.y;
+          stars.push(star);
+        });
+      } else {
+        createDefaultStars();
+      }
+    } else {
+      createDefaultStars();
+    }
+  } catch (error) {
+    console.error('Error loading stars:', error);
+    createDefaultStars();
+  }
+  animate();
+}
+
+function createDefaultStars() {
+  const exampleTexts = [
+    '3240923', '                   itsbeenawhile', 'a12c4', 'yo', 'cool',
+    'w"sh', 'eyesore', 'ASHEARS', 'not much more', 'nice',
+    'viluid', 'yes', '#ed0025', '/|// ||| ///| /  |/|| ||| //|', 'hi',
+    'yo', 'hey', 'please give me a name !!', '>', 'FUSKXSNCZWHZJLJVUVGC'
+  ];
+
+  for (let i = 0; i < numStars; i++) {
+    stars.push(new Star(i, exampleTexts[i] || ''));
+  }
+}
+
+loadStars();
 
 document.addEventListener('mousemove', (e) => {
-  if (isDragging) {
-    gif.style.left = (e.clientX - offsetX) + 'px';
-    gif.style.top = (e.clientY - offsetY) + 'px';
-  }
+  stars.forEach(star => {
+    if (star.isDragging) {
+      const newX = e.clientX - star.dragStartX;
+      const newY = e.clientY - star.dragStartY;
+      star.vx = (newX - star.x) * 0.3;
+      star.vy = (newY - star.y) * 0.3;
+      star.x = newX;
+      star.y = newY;
+    }
+  });
 });
 
 document.addEventListener('mouseup', () => {
-  if (isDragging) {
-    isDragging = false;
-    const position = {
-      left: gif.style.left,
-      top: gif.style.top
-    };
-    console.log('GIF position saved:', position);
-  }
+  stars.forEach(star => {
+    if (star.isDragging) {
+      star.isDragging = false;
+
+      // Calculate hold duration in seconds
+      star.holdDuration = (Date.now() - star.dragStartTime) / 1000;
+
+      // Calculate recovery friction based on hold duration
+      // Minimum 0.1 (held for 2+ seconds), maximum 1.0 (instant release)
+      // Formula: starts at 1.0, decreases by 0.45 per second, minimum 0.1
+      star.recoveryFriction = Math.max(0.1, 1.0 - (star.holdDuration * 0.45));
+    }
+  });
 });
+
+function animate() {
+  stars.forEach(star => star.update());
+
+  // Removed collision system - focusing on smooth spiral interactions only
+
+  requestAnimationFrame(animate);
+}
 </script>
 
 
